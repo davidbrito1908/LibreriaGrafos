@@ -69,9 +69,20 @@ int main(){
     N.agregarArcoND("Tres", "Dos", 5);
 
     N.modificarPesoArcoND("Dos", "Uno", 16);
-    N.eliminarArcoND("Dos", "Uno");
-    
-    list<string> L = N.vecinos("Dos");
+    //N.eliminarArcoND("Dos", "Uno");
+    vector<string> mapeo; 
+    GrafoNoDirigido<int> M = N.mapear(&mapeo);
+    int i;
+
+    for(i=0;i<M.getNVertices(); i++){
+        //cout<<M.getNVertices()<<"  "<<mapeo.at(i)<<endl;
+        cout<<"Posicion " << i << " corresponde a: " << mapeo.at(i)<<endl;
+    }
+ 
+
+    N.escribirGrafo();
+    M.escribirGrafo();
+    /*list<string> L = N.vecinos("Dos");
     if (L.empty()){
         cout<<"No  hay";
     }else{
@@ -79,18 +90,7 @@ int main(){
             cout<<L.front()<<", ";
             L.pop_front();
         }
-    }
+    }*/
 
-    Vertice<string> *v = N.getPrimero();  
-    while(v != nullptr){
-        cout<< v->getInfo()<<" = ";
-        Arco<string> *a = v->getArcos();
-        while(a != nullptr){
-            cout<< a->getInfo()->getInfo() << "(PESO = " << N.getPesoArco(v->getInfo(),a->getInfo()->getInfo())<<")";
-            a=a->getSig();
-        }
-        v=v->getSig();
-        cout<<endl;    
-    }
     return 0;
 }

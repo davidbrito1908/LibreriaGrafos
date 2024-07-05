@@ -2,13 +2,14 @@
 #define GRAFODDIRIGIDO_H_
 
 #include <list>
+#include <vector>
 #include "nodoVertice.hpp"
 #include "nodoArco.hpp"
 using namespace std;
 
 template <typename Tipo>
 class GrafoDirigido{
-    private:
+    protected:
         int nVertices, nArcos;
         Vertice<Tipo> *primero;
 
@@ -36,10 +37,6 @@ class GrafoDirigido{
         list<Tipo> predecesores(Vertice<Tipo> *v); //FUNCIONAL
         list<Tipo> predecesores(Tipo v); //FUNCIONAL
 
-        list<Tipo> vecinos(Vertice<Tipo> *v); //FUNCIONAL
-        list<Tipo> vecinos(Tipo v); //FUNCIONAL
-
-
         //ARCOS
         bool existeArco(Tipo v, Tipo w); //FUNCIONAL
         float getPesoArco(Tipo v, Tipo w); //FUNCIONAL
@@ -50,6 +47,10 @@ class GrafoDirigido{
         void agregarVertice (Tipo v); //FUNCIONAL
         void eliminarVertice (Tipo v); //FUNCIONAL
 
+        GrafoDirigido<int> mapear(vector<Tipo> *mapeo);
+        int buscarMapeo(vector<Tipo> arreglo, Tipo elem, int dim);
+
+        void escribirGrafo();
 };
 
 
@@ -385,9 +386,65 @@ void GrafoDirigido<Tipo>::eliminarVertice (Tipo v){
             inicio->setSig(objetivo->getSig());
             objetivo->setSig(nullptr);
         }
-        //if(objetivo == nullptr) return;
         delete objetivo;
         this->nVertices = this->nVertices - 1;
+    }
+}
+
+template<typename Tipo>
+GrafoDirigido<int> GrafoDirigido<Tipo>::mapear(vector<Tipo> *mapeo){
+    Vertice<Tipo> *actual = this->primero;
+    int i=0, dim=this->getNVertices();
+    GrafoDirigido<int> grafo;
+    Arco<Tipo> *arco;
+    //MAPEAR Y AGREGAR VERTICES AL GRAFO MAPEADO
+    while(actual!=nullptr){
+        mapeo->emplace_back(actual->getInfo());
+        grafo.agregarVertice(i);
+        actual=actual->getSig();
+        i++;
+    }
+
+    //AGREGAR ARCOS AL GRAFO MAPEADO
+    actual = this->primero;
+    i=0;
+    while(actual != nullptr){
+        arco = actual->getArcos();
+        while(arco != nullptr){
+            int v = this->buscarMapeo(*mapeo, arco->getInfo()->getInfo(), dim);
+            grafo.agregarArco(i,v);
+        }
+
+        arco=arco->getSig();
+        i++;
+    }
+
+    return grafo;
+
+}
+template<typename Tipo>
+int GrafoDirigido<Tipo>::buscarMapeo(vector<Tipo> arreglo, Tipo elem, int dim){
+    int i = 0;
+    for(i=0;i<dim;i++){
+        if(arreglo.at(i) == elem){
+            return(i);
+        }
+    }
+    return -1;
+}
+
+template<typename Tipo>
+void GrafoDirigido<Tipo>::escribirGrafo(){
+    Vertice<Tipo> *v = this->primero;  
+    while(v != nullptr){
+        cout<< v->getInfo()<<" = ";
+        Arco<Tipo> *a = v->getArcos();
+        while(a != nullptr){
+            cout<< a->getInfo()->getInfo() << " (PESO = " << this->getPesoArco(v->getInfo(),a->getInfo()->getInfo())<<")";
+            a=a->getSig();
+        }
+        v=v->getSig();
+        cout<<endl;    
     }
 }
 #endif

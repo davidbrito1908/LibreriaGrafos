@@ -2,6 +2,7 @@
 #define GRAFONODIRIGIDO_H_
 
 #include <list>
+#include <vector>
 #include "grafoDirigido.hpp"
 using namespace std;
 
@@ -17,6 +18,7 @@ class GrafoNoDirigido: public GrafoDirigido<Tipo>{
         void eliminarArcoND(Tipo v, Tipo w); //FUNCIONAL
         //VERTICES
 
+        GrafoNoDirigido<int> mapear(vector<Tipo> *mapeo);
 };
 
 
@@ -64,4 +66,37 @@ void GrafoNoDirigido<Tipo>::eliminarArcoND(Tipo v, Tipo w){
 //OPERACIONES CON VERTICES ================================================================
 
 
+
+template<typename Tipo>
+GrafoNoDirigido<int> GrafoNoDirigido<Tipo>::mapear(vector<Tipo> *mapeo){
+    Vertice<Tipo> *actual = this->primero;
+    int i=0, dim=this->getNVertices();
+    GrafoNoDirigido<int> grafo;
+    Arco<Tipo> *arco;
+    grafo.construir();
+    //MAPEAR Y AGREGAR VERTICES AL GRAFO MAPEADO
+    while(actual!=nullptr){
+        mapeo->emplace_back(actual->getInfo());
+        grafo.agregarVertice(i);
+        actual=actual->getSig();
+        i++;
+    }
+
+    //AGREGAR ARCOS AL GRAFO MAPEADO
+    actual = this->primero;
+    i=0;
+    while(actual != nullptr){
+        arco = actual->getArcos();
+        while(arco != nullptr){
+            int v = this->buscarMapeo(*mapeo, arco->getInfo()->getInfo(), dim);
+            grafo.agregarArco(i,v, arco->getPeso());
+            arco=arco->getSig();
+        }
+        actual=actual->getSig();
+        i++;
+    }
+
+    return grafo;
+
+}
 #endif
