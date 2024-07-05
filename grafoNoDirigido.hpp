@@ -19,6 +19,10 @@ class GrafoNoDirigido: public Grafo<Tipo>{
         //VERTICES
 
         GrafoNoDirigido<int> mapear(vector<Tipo> *mapeo);
+        //RECORRIDOS
+
+        //COMPONENTES CONEXAS (SOLO GRAFOS MAPEADOS)
+        int NComponentes(); //FUNCIONAL
 };
 
 
@@ -89,7 +93,7 @@ GrafoNoDirigido<int> GrafoNoDirigido<Tipo>::mapear(vector<Tipo> *mapeo){
         arco = actual->getArcos();
         while(arco != nullptr){
             int v = this->buscarMapeo(*mapeo, arco->getInfo()->getInfo(), dim);
-            grafo.agregarArco(i,v, arco->getPeso());
+            grafo.agregarArcoND(i,v, arco->getPeso());
             arco=arco->getSig();
         }
         actual=actual->getSig();
@@ -98,5 +102,27 @@ GrafoNoDirigido<int> GrafoNoDirigido<Tipo>::mapear(vector<Tipo> *mapeo){
 
     return grafo;
 
+}
+
+//COMPONENTES CONEXAS
+template<>
+int GrafoNoDirigido<int>::NComponentes(){
+    int nComponentes=1, i=0;
+    vector<bool> visitados;
+    //Inicializar vector de visitados
+    for(i=0;i<this->getNVertices();i++){
+        visitados.emplace_back(false);
+    }
+
+    this->BFS(0,&visitados);
+
+    for(i=0;i<this->getNVertices();i++){
+        if (!visitados.at(i)){
+            this->BFS(i,&visitados);
+            cout << i << " No habia sido visitado"<<endl;
+            nComponentes++;
+        }
+    }
+    return nComponentes;
 }
 #endif

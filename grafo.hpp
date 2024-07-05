@@ -2,6 +2,7 @@
 #define GRAFO_H_
 
 #include <list>
+#include <queue>
 #include <vector>
 #include "nodoVertice.hpp"
 #include "nodoArco.hpp"
@@ -50,6 +51,9 @@ class Grafo{
         int buscarMapeo(vector<Tipo> arreglo, Tipo elem, int dim);
 
         void escribirGrafo();
+
+        //RECORRIDOS (SOLO PARA GRAFOS MAPEADOS)
+        void BFS(int v, vector<bool> *visitados); //FUNCIONAL
 };
 
 
@@ -415,6 +419,33 @@ void Grafo<Tipo>::escribirGrafo(){
         v=v->getSig();
         cout<<endl;    
     }
+}
+
+
+template <>
+void Grafo<int>::BFS(int v, vector<bool> *visitados){
+    queue<int> cola;
+    list<int> vecinos;
+    int w;
+    cola.push(v);
+    if(!visitados->empty()){
+        visitados->at(v) = true;
+ 
+        while(!cola.empty()){
+            v=cola.front();
+            vecinos = this->sucesores(v);
+            while(!vecinos.empty()){
+                w = vecinos.front();
+                if(!visitados->at(w)){
+                    visitados->at(w) = true;
+                    cola.push(w);
+                }
+                vecinos.pop_front();
+            }
+            cola.pop();
+        }
+    }
+    return;
 }
 
 #endif

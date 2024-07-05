@@ -29,14 +29,21 @@ int main(){
     g.agregarArco(4,1, 7.3);
     g.agregarArco(4,2, 5);
     g.agregarArco(4,76);
-    //g.eliminarArco(4,1); 
+    //g.agregarArco(4,3);
+    //g.agregarArco(1,2);
+    g.agregarArco(2,3);
+    g.eliminarArco(3,4); 
     //g.eliminarVertice(7);    
     g.modificarPesoArco(56,4,49);
     //g.eliminarArco(8,5);     
-    if (g.esSumidero(4)){ 
+    if (g.esSumidero(4)){        
         cout<<"Es sumidero";
     }
-
+    vector<int> map;
+    GrafoDirigido<int> o = g.mapear(&map);
+    int cfc = o.NComponentesFConexas();
+  
+    cout<<endl<<cfc<< " componentes fuertemente conexas" <<endl;
     Vertice<int> *v = g.getPrimero();  
     while(v != nullptr){
         cout<< v->getInfo()<<" = ";
@@ -77,10 +84,13 @@ int main(){
         //cout<<M.getNVertices()<<"  "<<mapeo.at(i)<<endl;
         cout<<"Posicion " << i << " corresponde a: " << mapeo.at(i)<<endl;
     }
-  
+   
 
     N.escribirGrafo();
     M.escribirGrafo();
+    //N.NComponentes(); 
+    int c = M.NComponentes();
+    cout << endl      << c << " Componentes"<<endl;
     /*list<string> L = N.vecinos("Dos");
     if (L.empty()){
         cout<<"No  hay";
