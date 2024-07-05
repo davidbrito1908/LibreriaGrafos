@@ -20,7 +20,7 @@ int main(){
     g.agregarVertice(2);
     g.agregarVertice(3);
     g.agregarVertice(4);
-    //g.agregarArco(2,3);
+    //g.agregarArco(2,3); 
     //g.agregarArco(2,4);
     g.agregarArco(3,4);
     g.agregarArco(2,4, -8.6);
@@ -33,7 +33,7 @@ int main(){
     //g.eliminarVertice(7);    
     g.modificarPesoArco(56,4,49);
     //g.eliminarArco(8,5);     
-    if (g.esSumidero(1)){ 
+    if (g.esSumidero(4)){ 
         cout<<"Es sumidero";
     }
 
@@ -67,7 +67,6 @@ int main(){
     N.agregarVertice("Tres");
     N.agregarArcoND("Uno", "Dos", 5);
     N.agregarArcoND("Tres", "Dos", 5);
-
     N.modificarPesoArcoND("Dos", "Uno", 16);
     //N.eliminarArcoND("Dos", "Uno");
     vector<string> mapeo; 

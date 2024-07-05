@@ -3,11 +3,11 @@
 
 #include <list>
 #include <vector>
-#include "grafoDirigido.hpp"
+#include "grafo.hpp"
 using namespace std;
 
 template <typename Tipo>
-class GrafoNoDirigido: public GrafoDirigido<Tipo>{
+class GrafoNoDirigido: public Grafo<Tipo>{
     public:
         list<Tipo> vecinos(Vertice<Tipo> *v); //FUNCIONAL
         list<Tipo> vecinos(Tipo v); //FUNCIONAL
