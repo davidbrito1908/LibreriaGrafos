@@ -1,0 +1,67 @@
+#ifndef GRAFONODIRIGIDO_H_
+#define GRAFONODIRIGIDO_H_
+
+#include <list>
+#include "grafoDirigido.hpp"
+using namespace std;
+
+template <typename Tipo>
+class GrafoNoDirigido: public GrafoDirigido<Tipo>{
+    public:
+        list<Tipo> vecinos(Vertice<Tipo> *v); //FUNCIONAL
+        list<Tipo> vecinos(Tipo v); //FUNCIONAL
+
+        //ARCOS
+        void modificarPesoArcoND(Tipo v, Tipo w, float nuevo); //FUNCIONAL
+        void agregarArcoND(Tipo v, Tipo w, float peso = 0); //FUNCIONAL
+        void eliminarArcoND(Tipo v, Tipo w); //FUNCIONAL
+        //VERTICES
+
+};
+
+
+template<typename Tipo>
+list<Tipo> GrafoNoDirigido<Tipo>::vecinos(Vertice<Tipo> *v){
+    list<Tipo> lista;
+
+    Arco<Tipo> *arco;
+    if(v!=nullptr){
+        arco = v->getArcos();
+
+        while (arco!=nullptr){
+            lista.push_back(arco->getInfo()->getInfo());
+            arco = arco->getSig();
+        }
+    }
+
+    return lista;            
+}
+template<typename Tipo>
+list<Tipo> GrafoNoDirigido<Tipo>::vecinos(Tipo v){
+    return this->vecinos(this->getVertice(v));            
+}
+//OPERACIONES CON ARCOS ============================================================
+
+template <typename Tipo>
+void GrafoNoDirigido<Tipo>::modificarPesoArcoND(Tipo v, Tipo w, float nuevo){
+    this->modificarPesoArco(v,w,nuevo);
+    this->modificarPesoArco(w,v,nuevo);
+}
+
+template <typename Tipo>
+void GrafoNoDirigido<Tipo>::agregarArcoND(Tipo v, Tipo w, float peso){
+    this->agregarArco(v,w,peso);
+    this->agregarArco(w,v,peso);
+}
+
+template <typename Tipo>
+void GrafoNoDirigido<Tipo>::eliminarArcoND(Tipo v, Tipo w){
+    this->eliminarArco(v,w);
+    this->eliminarArco(w,v);
+}
+
+
+//OPERACIONES CON VERTICES ================================================================
+
+
+#endif
