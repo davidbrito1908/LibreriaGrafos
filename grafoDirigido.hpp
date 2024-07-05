@@ -51,6 +51,10 @@ class GrafoDirigido{
         int buscarMapeo(vector<Tipo> arreglo, Tipo elem, int dim);
 
         void escribirGrafo();
+
+        //Tipos
+        bool esSumidero(Tipo v);
+        bool esFuente(Tipo v);
 };
 
 
@@ -446,5 +450,16 @@ void GrafoDirigido<Tipo>::escribirGrafo(){
         v=v->getSig();
         cout<<endl;    
     }
+}
+
+template <typename Tipo>
+bool GrafoDirigido<Tipo>::esSumidero(Tipo v){
+    list<Tipo> L = this->sucesores(v);
+    return L.empty();
+}
+template <typename Tipo>
+bool GrafoDirigido<Tipo>::esFuente(Tipo v){
+    list<Tipo> L = this->predecesores(v);
+    return L.empty();
 }
 #endif

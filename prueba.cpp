@@ -7,7 +7,7 @@ using namespace std;
 
 int main(){
 
-    /*GrafoDirigido<int> g;
+    GrafoDirigido<int> g;
     //g.agregarVertice(1);
     g.construir();
     //g.setPrimero(1);
@@ -33,11 +33,11 @@ int main(){
     //g.eliminarVertice(7);    
     g.modificarPesoArco(56,4,49);
     //g.eliminarArco(8,5);     
-    /*if (g.existeArco(4,2)){ 
-        cout<<"SI HAY";
-    }*/
+    if (g.esSumidero(1)){ 
+        cout<<"Es sumidero";
+    }
 
-    /*Vertice<int> *v = g.getPrimero();  
+    Vertice<int> *v = g.getPrimero();  
     while(v != nullptr){
         cout<< v->getInfo()<<" = ";
         Arco<int> *a = v->getArcos();
@@ -58,8 +58,8 @@ int main(){
             cout<<L.front()<<", ";
             L.pop_front();
         }
-    }*/
-
+    }
+    cout<<endl<<endl<<endl;
 
     GrafoNoDirigido<string> N;
     N.agregarVertice("Uno");
@@ -78,7 +78,7 @@ int main(){
         //cout<<M.getNVertices()<<"  "<<mapeo.at(i)<<endl;
         cout<<"Posicion " << i << " corresponde a: " << mapeo.at(i)<<endl;
     }
- 
+  
 
     N.escribirGrafo();
     M.escribirGrafo();
