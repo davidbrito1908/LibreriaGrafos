@@ -25,6 +25,10 @@ class GrafoNoDirigido: public Grafo<Tipo>{
         int NComponentes(); //FUNCIONAL
 
         list<Tipo> caminoMenor(Tipo v, Tipo w);
+        void arbolExpandidoMinimo(GrafoNoDirigido<int> *g, float *peso);
+        void arcoMinimo(list<int> activos, int *v, int *w, float *peso, vector<bool> visitados);
+        list<list<Tipo>> puentes();
+        bool esConexo();
 };
 
 
@@ -140,5 +144,86 @@ list<Tipo> GrafoNoDirigido<Tipo>::caminoMenor(Tipo v, Tipo w){
         camino.pop_front();
     }
     return resultado;
+}
+
+
+template<typename Tipo>
+void GrafoNoDirigido<Tipo>::arbolExpandidoMinimo(GrafoNoDirigido<int> *g, float *peso){
+    vector<bool> visitados;
+    int i,v,w;
+    bool fin;
+    list<int> vertices, activos;
+    float p;
+
+    for(i=0;i<this->getNVertices();i++){
+        g->agregarVertice(i);
+        visitados.emplace_back(false);
+    }
+
+    activos.push_back(0);
+    visitados.at(0) = true;
+    fin = false;
+    p=0;
+    *peso=0;
+    while(!fin){
+        this->arcoMinimo(activos,&v,&w,&p,visitados);
+        g->agregarArcoND(v,w, p);
+        *peso = *peso + p;
+        activos.push_back(w);
+        visitados.at(w) = true;
+
+        fin = true;
+        for ( i = 0; i< this->getNVertices(); i++){
+            fin = fin && visitados.at(i);
+        }
+    }
+    return;
+}
+template<typename Tipo>
+void GrafoNoDirigido<Tipo>::arcoMinimo(list<int> activos, int *v, int *w, float *peso, vector<bool> visitados){
+    int actual, act;
+    list<int> vecinos;
+    float pesoArco;
+    bool prim=false;
+
+    while(!activos.empty()){
+        actual = activos.front();
+        vecinos = this->sucesores(actual);
+        while(!vecinos.empty()){
+            act = vecinos.front();
+            if (!visitados.at(act)){
+                pesoArco = this->getPesoArco(actual, act);
+                if((pesoArco<*peso) || (!prim)){
+                    cout<<*peso << " >>>>" << pesoArco<<endl;
+                    *peso = pesoArco;
+                    *v = actual;
+                    *w = act;
+                    prim=true;
+                }
+            }
+            vecinos.pop_front();
+        }
+        activos.pop_front();
+    }
+}
+template <typename Tipo>
+bool GrafoNoDirigido<Tipo>::esConexo(){
+    vector<Tipo> mapeo;
+    vector<bool> visitados;
+    int i;
+    //MAPEAR GRAFO
+    GrafoNoDirigido<int> g = this->mapear(&mapeo);
+    //INICIALIZAR VECTOR DE VISITADOS
+    for(i=0;i<this->nVertices;i++){
+        visitados.emplace_back(false);
+    }
+    //REALIZAR RECORRIDO BFS
+    this->BFS(0, &visitados);
+    //VERIFICAR QUE SE HAYAN VISITADOS TODOS LOS VERTICES
+    for(i=0;i<this->nVertices;i++){
+        if(!visitados.at(i)) return false;
+    }
+
+    return true;
 }
 #endif

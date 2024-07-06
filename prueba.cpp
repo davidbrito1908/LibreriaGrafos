@@ -6,9 +6,72 @@
 #include <vector>
 using namespace std;
 
-int main(){
+void leer(GrafoDirigido<string> *g){
+    string v,w;
+    float peso;
+    while(cin>>v){
+        cin>>w;
+        cin>>peso;
 
-    //cout<<endl<<endl<<endl;
+        g->agregarVertice(v);
+        g->agregarVertice(w);
+        g->agregarArco(v,w);
+    }
+
+} 
+void leerND(GrafoNoDirigido<string> *g){ 
+    string v,w;
+    float peso;
+    while(cin>>v){
+        cin>>w;
+        cin>>peso;
+
+        g->agregarVertice(v);
+        g->agregarVertice(w);
+        g->agregarArcoND(v,w, peso);
+    }
+
+}
+
+
+int main(){
+    GrafoNoDirigido<string> G;
+    leerND(&G);
+    G.escribirGrafo();
+    vector<string> map;
+    GrafoNoDirigido<int> A, M = G.mapear(&map);
+    float p;
+    M.arbolExpandidoMinimo(&A, &p);
+
+    cout<<endl;
+    for(int i = 0; i<A.getNVertices();i++){
+        cout<<endl<<i<<" Es igual a:" << map[i]<<endl;    
+
+    }
+    A.escribirGrafo(); 
+    cout<<endl<<p;
+    A.eliminarArcoND(0,1);
+
+    if(A.esConexo()){  
+        cout<<"Es conexo";
+    } else{
+        cout << "No es conexo";  
+    }
+    if(G.esCompleto()){  
+        cout<<"Es completo";
+    } else{
+        cout << "No es completo";  
+    }
+    return 0;
+
+}
+
+
+
+void pruebas(){
+
+
+       //cout<<endl<<endl<<endl;
 
     GrafoNoDirigido<string> N;
     N.construir();
@@ -40,7 +103,7 @@ int main(){
     }
     cout<<endl; */
    
-
+   
     N.escribirGrafo();
     M.escribirGrafo();
     //N.NComponentes(); 
@@ -107,10 +170,19 @@ int main(){
         K.pop_front();
     }
  
-    return 0;    
-}
 
-void pruebas(){
+
+
+
+
+
+
+
+
+
+
+
+
     
     /*GrafoDirigido<int> g;
     //g.agregarVertice(1);

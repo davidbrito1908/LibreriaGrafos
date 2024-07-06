@@ -57,6 +57,7 @@ class Grafo{
 
 
         list<int> caminoDijkstra(int v, int w);
+        bool esCompleto();
 };
 
 
@@ -455,7 +456,6 @@ void Grafo<int>::BFS(int v, vector<bool> *visitados){
 
 template <>
 list<int> Grafo<int>::caminoDijkstra(int v, int w){
-    vector<bool> visitados;
     vector<float> costos;
     vector<int> camino;
     list<int> resultado, vecinos;
@@ -464,7 +464,6 @@ list<int> Grafo<int>::caminoDijkstra(int v, int w){
     float costo; 
 
     for(i=0;i<this->getNVertices();i++){
-        visitados.push_back(false);
         costos.push_back(-1);
         camino.push_back(-1);
     }
@@ -481,14 +480,11 @@ list<int> Grafo<int>::caminoDijkstra(int v, int w){
                 }
                 else{
                     costo=costos.at(camino.at(actual)) + this->getPesoArco(camino.at(actual), actual) + this->getPesoArco(actual,destino);
-
                 }
                 if((costo<costos.at(destino)) || (costos.at(destino) == -1)){
-                    if(!visitados.at(destino)){
-                        costos.at(destino) = costo;
-                        camino.at(destino) = actual;
-                        cola.push(destino);
-                    }
+                    costos.at(destino) = costo;
+                    camino.at(destino) = actual;
+                    cola.push(destino);
                 }
                 vecinos.pop_front();
             }
@@ -502,5 +498,10 @@ list<int> Grafo<int>::caminoDijkstra(int v, int w){
         }
     }
     return resultado;
+}
+
+template<typename Tipo>
+bool Grafo<Tipo>::esCompleto(){
+    return (this->nArcos == (this->nVertices * (this->nVertices - 1)));
 }
 #endif
