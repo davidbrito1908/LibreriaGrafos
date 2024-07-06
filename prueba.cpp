@@ -3,11 +3,116 @@
 #include "grafoDirigido.hpp"
 #include "grafoNoDirigido.hpp"
 #include <list>
+#include <vector>
 using namespace std;
 
 int main(){
 
-    GrafoDirigido<int> g;
+    //cout<<endl<<endl<<endl;
+
+    GrafoNoDirigido<string> N;
+    N.construir();
+    N.agregarVertice("Uno");
+    N.agregarVertice("Dos");
+    N.agregarVertice("Tres");
+    N.agregarVertice("Cuatro");
+    N.agregarVertice("Cinco");
+    N.agregarVertice("Seis");
+    N.agregarArcoND("Uno", "Dos", 1);
+    N.agregarArcoND("Uno", "Tres", 2);
+    N.agregarArcoND("Tres", "Cuatro", 1);
+    N.agregarArcoND("Tres", "Cinco", 4);  
+    N.agregarArcoND("Cuatro", "Cinco", 2);  
+    N.agregarArcoND("Dos", "Seis", 3);  
+    N.agregarArcoND("Dos", "Tres", 0);  
+    N.agregarArcoND("Cinco", "Seis", 2);  
+    N.agregarArcoND("Cuatro", "Seis", 1); 
+    N.agregarArcoND("Uno", "Cuatro", 6);   
+    //N.modificarPesoArcoND("Dos", "Uno", 16);
+    //N.eliminarArcoND("Dos", "Uno");
+    vector<string> mapeo; 
+    GrafoNoDirigido<int> M = N.mapear(&mapeo);
+    //int i;
+
+    /*for(i=0;i<M.getNVertices(); i++){
+        //cout<<M.getNVertices()<<"  "<<mapeo.at(i)<<endl;
+        cout<<"Posicion " << i << " corresponde a: " << mapeo.at(i)<<endl;
+    }
+    cout<<endl; */
+   
+
+    N.escribirGrafo();
+    M.escribirGrafo();
+    //N.NComponentes(); 
+    /*int c = M.NComponentes();
+    cout << endl      << c << " Componentes"<<endl;*/
+    /*list<string> L = N.vecinos("Dos");
+    if (L.empty()){
+        cout<<"No  hay";
+    }else{
+        while(!L.empty()){
+            cout<<L.front()<<", ";
+            L.pop_front();
+        } 
+    }*/       
+    list<int>A;
+    list<int>B;
+
+
+    //A.push_front(1);
+    //B.push_front(2);
+    list<int> R;   
+    R=M.caminoDijkstra(4,0);   
+    while(!R.empty()){
+        cout<<mapeo[R.front()]<<" -> ";
+        R.pop_front(); 
+    } 
+    cout<<endl;
+
+    list<string> J = N.caminoMenor("Uno", "Seis"); 
+    while(!J.empty()){
+        if(J.size() == 1){
+            cout << J.front();
+        }else{
+            cout << J.front() << "->";
+        }
+        J.pop_front();
+    }
+
+    cout << endl<<endl;
+    GrafoDirigido<string> D;
+    D.construir();
+    D.agregarVertice("A");
+        D.agregarVertice("B");
+        D.agregarVertice("C");
+        D.agregarVertice("D");
+        D.agregarVertice("E");
+    D.agregarArco("A", "B", 4);
+    D.agregarArco("C", "B", 2);
+    D.agregarArco("A", "C", 1);
+    D.agregarArco("B", "D", 1);
+    D.agregarArco("A", "D", 5);
+    D.agregarArco("D", "E", 1);
+    D.agregarArco("A", "E", 7);
+    D.agregarVertice("G");  
+    D.agregarArco("B", "G",0);
+    D.agregarArco("G", "D",1);
+    list<string> K = D.caminoMenor("A", "E"); 
+    while(!K.empty()){
+        if(K.size() == 1){
+            cout << K.front();
+        }else{
+            cout << K.front() << "->";
+        }
+        K.pop_front();
+    }
+ 
+    return 0;    
+}
+
+void pruebas(){
+    
+    /*GrafoDirigido<int> g;
     //g.agregarVertice(1);
     g.construir();
     //g.setPrimero(1);
@@ -44,17 +149,9 @@ int main(){
     int cfc = o.NComponentesFConexas();
   
     cout<<endl<<cfc<< " componentes fuertemente conexas" <<endl;
-    Vertice<int> *v = g.getPrimero();  
-    while(v != nullptr){
-        cout<< v->getInfo()<<" = ";
-        Arco<int> *a = v->getArcos();
-        while(a != nullptr){
-            cout<< a->getInfo()->getInfo() << "(PESO = " << g.getPesoArco(v->getInfo(),a->getInfo()->getInfo())<<")";
-            a=a->getSig();
-        }
-        v=v->getSig();
-        cout<<endl;    
-    }
+    //Vertice<int> *v = g.getPrimero();  
+ 
+    g.escribirGrafo();
 
     cout<<endl<<g.getNVertices() << "   "<<g.getNArcos()<<endl;
     list<int> L = g.sucesores(1);
@@ -65,41 +162,5 @@ int main(){
             cout<<L.front()<<", ";
             L.pop_front();
         }
-    }
-    cout<<endl<<endl<<endl;
-
-    GrafoNoDirigido<string> N;
-    N.agregarVertice("Uno");
-    N.agregarVertice("Dos");
-    N.agregarVertice("Tres");
-    N.agregarArcoND("Uno", "Dos", 5);
-    N.agregarArcoND("Tres", "Dos", 5);
-    N.modificarPesoArcoND("Dos", "Uno", 16);
-    //N.eliminarArcoND("Dos", "Uno");
-    vector<string> mapeo; 
-    GrafoNoDirigido<int> M = N.mapear(&mapeo);
-    int i;
-
-    for(i=0;i<M.getNVertices(); i++){
-        //cout<<M.getNVertices()<<"  "<<mapeo.at(i)<<endl;
-        cout<<"Posicion " << i << " corresponde a: " << mapeo.at(i)<<endl;
-    }
-   
-
-    N.escribirGrafo();
-    M.escribirGrafo();
-    //N.NComponentes(); 
-    int c = M.NComponentes();
-    cout << endl      << c << " Componentes"<<endl;
-    /*list<string> L = N.vecinos("Dos");
-    if (L.empty()){
-        cout<<"No  hay";
-    }else{
-        while(!L.empty()){
-            cout<<L.front()<<", ";
-            L.pop_front();
-        }
     }*/
-
-    return 0;
 }

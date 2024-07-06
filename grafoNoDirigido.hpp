@@ -23,6 +23,8 @@ class GrafoNoDirigido: public Grafo<Tipo>{
 
         //COMPONENTES CONEXAS (SOLO GRAFOS MAPEADOS)
         int NComponentes(); //FUNCIONAL
+
+        list<Tipo> caminoMenor(Tipo v, Tipo w);
 };
 
 
@@ -124,5 +126,19 @@ int GrafoNoDirigido<int>::NComponentes(){
         }
     }
     return nComponentes;
+}
+template <typename Tipo>
+list<Tipo> GrafoNoDirigido<Tipo>::caminoMenor(Tipo v, Tipo w){
+    vector<Tipo> mapeo;
+    GrafoNoDirigido<int> aux = this->mapear(&mapeo);
+    int inicio = this->buscarMapeo(mapeo, v, this->getNVertices()), fin = this->buscarMapeo(mapeo, w, this->getNVertices());
+    list<int> camino = aux.caminoDijkstra(inicio, fin);
+
+    list<Tipo> resultado;
+    while(!camino.empty()){
+        resultado.push_back(mapeo[camino.front()]);
+        camino.pop_front();
+    }
+    return resultado;
 }
 #endif

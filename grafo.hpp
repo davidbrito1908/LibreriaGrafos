@@ -54,6 +54,9 @@ class Grafo{
 
         //RECORRIDOS (SOLO PARA GRAFOS MAPEADOS)
         void BFS(int v, vector<bool> *visitados); //FUNCIONAL
+
+
+        list<int> caminoDijkstra(int v, int w);
 };
 
 
@@ -413,7 +416,8 @@ void Grafo<Tipo>::escribirGrafo(){
         cout<< v->getInfo()<<" = ";
         Arco<Tipo> *a = v->getArcos();
         while(a != nullptr){
-            cout<< a->getInfo()->getInfo() << " (PESO = " << this->getPesoArco(v->getInfo(),a->getInfo()->getInfo())<<")";
+            //ESCRITURA DEL ARCO -> (origen,destino)[peso]
+            cout<< "("<< v->getInfo() << ", "<< a->getInfo()->getInfo() << ")[" << this->getPesoArco(v->getInfo(),a->getInfo()->getInfo())<<"]  ";
             a=a->getSig();
         }
         v=v->getSig();
@@ -448,4 +452,55 @@ void Grafo<int>::BFS(int v, vector<bool> *visitados){
     return;
 }
 
+
+template <>
+list<int> Grafo<int>::caminoDijkstra(int v, int w){
+    vector<bool> visitados;
+    vector<float> costos;
+    vector<int> camino;
+    list<int> resultado, vecinos;
+    queue<int> cola;
+    int i, actual, destino;
+    float costo; 
+
+    for(i=0;i<this->getNVertices();i++){
+        visitados.push_back(false);
+        costos.push_back(-1);
+        camino.push_back(-1);
+    }
+    if((v<this->getNVertices()) && (w<this->getNVertices())){
+        costos.at(v) = 0;
+        cola.push(v);
+        while(!cola.empty()){
+            actual=cola.front();
+            vecinos = this->sucesores(actual);
+            while(!vecinos.empty()){
+                destino = vecinos.front();
+                if(camino.at(actual) == -1){
+                    costo=costos.at(actual) + this->getPesoArco(actual,destino);
+                }
+                else{
+                    costo=costos.at(camino.at(actual)) + this->getPesoArco(camino.at(actual), actual) + this->getPesoArco(actual,destino);
+
+                }
+                if((costo<costos.at(destino)) || (costos.at(destino) == -1)){
+                    if(!visitados.at(destino)){
+                        costos.at(destino) = costo;
+                        camino.at(destino) = actual;
+                        cola.push(destino);
+                    }
+                }
+                vecinos.pop_front();
+            }
+            cola.pop();
+        }
+        resultado.push_back(w);
+        actual = w;
+        while((actual != v) && (actual != -1)){
+            actual = camino.at(actual);
+            resultado.push_front(actual);
+        }
+    }
+    return resultado;
+}
 #endif
