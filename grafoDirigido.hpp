@@ -17,6 +17,7 @@ class GrafoDirigido: public Grafo<Tipo>{
         int NComponentesFConexas(); //NO LISTO
         list<Tipo> caminoMenor(Tipo v, Tipo w);
         list<list<Tipo>> caminosHamiltonianos();
+        list<Tipo> caminoHamiltonianoMinimo();
 };
 
 
@@ -129,7 +130,6 @@ list<list<Tipo>> GrafoDirigido<Tipo>::caminosHamiltonianos(){
         }
         visitados.at(i) = true;
         camAux.clear();
-        cam.clear();
         camAux.push_back(i);
         aux.hamiltonianos(i,&visitados, &nVisitados, &peso, &result, &camAux);
 
@@ -147,5 +147,40 @@ list<list<Tipo>> GrafoDirigido<Tipo>::caminosHamiltonianos(){
         result.pop_front();
     }
     return hamiltonianos;
+}
+template <typename Tipo>
+list<Tipo> GrafoDirigido<Tipo>::caminoHamiltonianoMinimo(){
+    int i,j, nVisitados = 1;
+    list<int> resultAux;
+    list<Tipo> result;
+    list<int> camAux;
+    list<Tipo> cam;
+    vector<bool> visitados;
+    float peso=0, menor=0;
+    bool prim = true;
+    vector<Tipo> m;
+    GrafoDirigido<int> aux = this->mapear(&m); 
+    for(i=0;i<this->nVertices;i++){
+        visitados.emplace_back(false);
+    }
+
+    for(i=0;i<this->nVertices;i++){
+        peso = 0;
+        nVisitados=1;
+        for(j=0;j<this->nVertices;j++){
+            visitados.at(j) = false;
+        }
+        visitados.at(i) = true;
+        camAux.clear();
+        camAux.push_back(i);
+        aux.hamiltonianoMinimo(i,&visitados, &nVisitados, &peso,&menor, &resultAux, &camAux, &prim);
+
+    }
+    //DESMAPEAR CAMINO
+    while(!resultAux.empty()){
+        result.push_back(m.at(resultAux.front()));
+        resultAux.pop_front();
+    }
+    return result;
 }
 #endif

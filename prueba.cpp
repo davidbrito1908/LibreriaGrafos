@@ -35,11 +35,11 @@ void leerND(GrafoNoDirigido<string> *g){
 
 
 int main(){
-    GrafoDirigido<string> G;
-    leer(&G);
+    GrafoNoDirigido<string> G;
+    leerND(&G);
     G.escribirGrafo();
     vector<string> map;
-    GrafoDirigido<int> A, M = G.mapear(&map);
+    GrafoNoDirigido<int> A, M = G.mapear(&map);
     float p;
     //M.arbolExpandidoMinimo(&A, &p);
 
@@ -72,15 +72,16 @@ int main(){
     }*/
     list<list<string>> c = G.caminosHamiltonianos();
     list<string> aux;
-    while(!c.empty()){    
-        aux = c.front(); 
+    //while(!c.empty()){    
+        //aux = c.front(); 
+        aux = G.caminoHamiltonianoMinimo();
         while(!aux.empty()){
             cout << aux.front() << "->";
             aux.pop_front();
         }
         cout<<endl;
-        c.pop_front(); 
-    }    
+        //c.pop_front(); 
+    //}    
 
     return 0; 
 

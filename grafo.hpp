@@ -60,7 +60,8 @@ class Grafo{
         bool esCompleto();
 
         //REVISAR CAMINOS HAMILTONIANOS
-        void hamiltonianos(Tipo actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<Tipo>> *caminos, list<Tipo> *caminoActual);
+        void hamiltonianos(int actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<int>> *caminos, list<int> *caminoActual);
+        void hamiltonianoMinimo(int i, vector<bool> *visitados, int *nVisitados, float *peso, float *pesoMenor, list<int> *minimo, list<int> *caminoActual, bool *prim);
 
 };
 
@@ -549,6 +550,39 @@ void Grafo<int>::hamiltonianos(int i, vector<bool> *visitados, int *nVisitados, 
             }else{
                 //SIGUIENTE PASO
                 this->hamiltonianos(w, visitados, nVisitados, peso, caminos, caminoActual);
+            }
+            //BORRAR PASO
+            visitados->at(w) = false;
+            *peso = *peso - this->getPesoArco(i,w);
+            caminoActual->pop_back();
+            *nVisitados = *nVisitados - 1;
+        }
+        vecinos.pop_front();
+    }
+}
+template <>
+void Grafo<int>::hamiltonianoMinimo(int i, vector<bool> *visitados, int *nVisitados, float *peso, float *pesoMenor, list<int> *minimo, list<int> *caminoActual, bool *prim){
+    int w;
+    //INICIALIZAR ALTERNATIVAS
+    list<int>vecinos = this->sucesores(i);
+    while(!vecinos.empty()){
+        //INICIALIZAR PASO
+        w = vecinos.front();
+        //VERIFICAR SI EL PASO ES VALIDO
+        if(!visitados->at(w)){
+            //PROCESAR PASO
+            visitados->at(w) = true;
+            *peso = *peso + this->getPesoArco(i,w);
+            caminoActual->push_back(w);
+            *nVisitados = *nVisitados + 1;
+            //VERIFICAR SI ES SOLUCION
+            if((*nVisitados == this->nVertices) && ((*peso<*pesoMenor)||*prim)){
+                *minimo = *caminoActual;
+                *pesoMenor = *peso;
+                *prim = false;
+            }else{
+                //SIGUIENTE PASO
+                this->hamiltonianoMinimo(w, visitados, nVisitados, peso, pesoMenor, minimo, caminoActual, prim);
             }
             //BORRAR PASO
             visitados->at(w) = false;
