@@ -26,7 +26,7 @@ class GrafoNoDirigido: public Grafo<Tipo>{
 
         list<Tipo> caminoMenor(Tipo v, Tipo w);
         void arbolExpandidoMinimo(GrafoNoDirigido<int> *g, float *peso);
-        void arcoMinimo(list<int> activos, int *v, int *w, float *peso, vector<bool> visitados);
+        void arcoMinimo(list<int> activos, int *v, int *w, float *peso, vector<bool> visitados, bool *band);
         list<list<Tipo>> puentes();
         bool esConexo();
 };
@@ -151,7 +151,7 @@ template<typename Tipo>
 void GrafoNoDirigido<Tipo>::arbolExpandidoMinimo(GrafoNoDirigido<int> *g, float *peso){
     vector<bool> visitados;
     int i,v,w;
-    bool fin;
+    bool fin, band=false;
     list<int> vertices, activos;
     float p;
 
@@ -166,21 +166,25 @@ void GrafoNoDirigido<Tipo>::arbolExpandidoMinimo(GrafoNoDirigido<int> *g, float 
     p=0;
     *peso=0;
     while(!fin){
-        this->arcoMinimo(activos,&v,&w,&p,visitados);
+        this->arcoMinimo(activos,&v,&w,&p,visitados, &band);
         g->agregarArcoND(v,w, p);
         *peso = *peso + p;
         activos.push_back(w);
         visitados.at(w) = true;
 
         fin = true;
-        for ( i = 0; i< this->getNVertices(); i++){
-            fin = fin && visitados.at(i);
+        if(!band){
+            for ( i = 0; i< this->getNVertices(); i++){
+                fin = fin && visitados.at(i);
+            }
+        }else{
+            *peso = 0;
         }
     }
-    return;
+
 }
 template<typename Tipo>
-void GrafoNoDirigido<Tipo>::arcoMinimo(list<int> activos, int *v, int *w, float *peso, vector<bool> visitados){
+void GrafoNoDirigido<Tipo>::arcoMinimo(list<int> activos, int *v, int *w, float *peso, vector<bool> visitados, bool *band){
     int actual, act;
     list<int> vecinos;
     float pesoArco;
@@ -188,13 +192,12 @@ void GrafoNoDirigido<Tipo>::arcoMinimo(list<int> activos, int *v, int *w, float 
 
     while(!activos.empty()){
         actual = activos.front();
-        vecinos = this->sucesores(actual);
+        vecinos = this->vecinos(actual);
         while(!vecinos.empty()){
             act = vecinos.front();
             if (!visitados.at(act)){
                 pesoArco = this->getPesoArco(actual, act);
                 if((pesoArco<*peso) || (!prim)){
-                    cout<<*peso << " >>>>" << pesoArco<<endl;
                     *peso = pesoArco;
                     *v = actual;
                     *w = act;
@@ -204,6 +207,10 @@ void GrafoNoDirigido<Tipo>::arcoMinimo(list<int> activos, int *v, int *w, float 
             vecinos.pop_front();
         }
         activos.pop_front();
+    }
+    //Si no se pudo procesar ni un solo arco, se activa la bandera band para finalizar el proceso
+    if(!prim){
+        *band = true;
     }
 }
 template <typename Tipo>
@@ -218,12 +225,44 @@ bool GrafoNoDirigido<Tipo>::esConexo(){
         visitados.emplace_back(false);
     }
     //REALIZAR RECORRIDO BFS
-    this->BFS(0, &visitados);
+    g.BFS(0, &visitados);
     //VERIFICAR QUE SE HAYAN VISITADOS TODOS LOS VERTICES
     for(i=0;i<this->nVertices;i++){
         if(!visitados.at(i)) return false;
     }
 
     return true;
+}
+template<typename Tipo>
+list<list<Tipo>> GrafoNoDirigido<Tipo>::puentes(){
+    list<list<Tipo>> arcosPuente;
+    list<Tipo> arco;
+    list<int> vecinos;
+    int i,w;
+    vector<Tipo> m;
+    GrafoNoDirigido<int> aux = this->mapear(&m);//MAPEAR GRAFO O(N+M)
+
+    for (i=0; i<this->nVertices; i++){ //RECORRER VERTICES 
+        vecinos = aux.vecinos(i);
+        //RECORRER ARCOS
+        while(!vecinos.empty()){
+            w = vecinos.front();
+            //ELIMINAR ARCO
+            aux.eliminarArcoND(i,w);
+            //VERIFICAR QUE EL GRAFO SIGA CONEXO (Si no es conexo, el arco es un arco puente)
+            if((!aux.esConexo()) && (i<w)){
+                //Agregar arco a la lista de arcos puente
+                arco.clear();
+                arco.push_back(m.at(i));
+                arco.push_back(m.at(w));
+                arcosPuente.push_back(arco);
+            }
+            //VOLVER A AGREGAR EL ARCO ELIMINADO
+            aux.agregarArcoND(i,w);
+            vecinos.pop_front();
+        }
+
+    }
+    return arcosPuente;
 }
 #endif

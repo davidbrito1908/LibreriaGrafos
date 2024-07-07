@@ -62,7 +62,15 @@ int main(){
     } else{
         cout << "No es completo";  
     }
-    return 0;
+
+    list<list<string>> puentes = G.puentes();
+    while(!puentes.empty()){   
+        list<string> a = puentes.front();
+        cout <<endl<< "(" << a.front() <<", "<<a.back()<<")"<<endl;
+        puentes.pop_front();
+    }
+
+    return 0; 
 
 }
 
