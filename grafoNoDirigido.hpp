@@ -29,6 +29,10 @@ class GrafoNoDirigido: public Grafo<Tipo>{
         void arcoMinimo(list<int> activos, int *v, int *w, float *peso, vector<bool> visitados, bool *band);
         list<list<Tipo>> puentes();
         bool esConexo();
+
+        //PARA GRAFOS QUE YA ESTEN MAPEADOS
+        bool esConexoM();
+        list<list<Tipo>> puentesM();
 };
 
 
@@ -214,7 +218,7 @@ void GrafoNoDirigido<Tipo>::arcoMinimo(list<int> activos, int *v, int *w, float 
     }
 }
 template <typename Tipo>
-bool GrafoNoDirigido<Tipo>::esConexo(){
+bool GrafoNoDirigido<Tipo>::esConexo(){ //METODO PARA GRAFOS YA MAPEADOS
     vector<Tipo> mapeo;
     vector<bool> visitados;
     int i;
@@ -226,6 +230,23 @@ bool GrafoNoDirigido<Tipo>::esConexo(){
     }
     //REALIZAR RECORRIDO BFS
     g.BFS(0, &visitados);
+    //VERIFICAR QUE SE HAYAN VISITADOS TODOS LOS VERTICES
+    for(i=0;i<this->nVertices;i++){
+        if(!visitados.at(i)) return false;
+    }
+
+    return true;
+}
+template <typename Tipo>
+bool GrafoNoDirigido<Tipo>::esConexoM(){
+    vector<bool> visitados;
+    int i;
+    //INICIALIZAR VECTOR DE VISITADOS
+    for(i=0;i<this->nVertices;i++){
+        visitados.emplace_back(false);
+    }
+    //REALIZAR RECORRIDO BFS
+    this->BFS(0, &visitados);
     //VERIFICAR QUE SE HAYAN VISITADOS TODOS LOS VERTICES
     for(i=0;i<this->nVertices;i++){
         if(!visitados.at(i)) return false;
@@ -259,6 +280,36 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::puentes(){
             }
             //VOLVER A AGREGAR EL ARCO ELIMINADO
             aux.agregarArcoND(i,w);
+            vecinos.pop_front();
+        }
+
+    }
+    return arcosPuente;
+}
+template<typename Tipo>
+list<list<Tipo>> GrafoNoDirigido<Tipo>::puentesM(){
+    list<list<Tipo>> arcosPuente;
+    list<Tipo> arco;
+    list<int> vecinos;
+    int i,w;
+
+    for (i=0; i<this->nVertices; i++){ //RECORRER VERTICES 
+        vecinos = this->vecinos(i);
+        //RECORRER ARCOS
+        while(!vecinos.empty()){
+            w = vecinos.front();
+            //ELIMINAR ARCO
+            this->eliminarArcoND(i,w);
+            //VERIFICAR QUE EL GRAFO SIGA CONEXO (Si no es conexo, el arco es un arco puente)
+            if((!this->esConexoM()) && (i<w)){
+                //Agregar arco a la lista de arcos puente
+                arco.clear();
+                arco.push_back(i);
+                arco.push_back(w);
+                arcosPuente.push_back(arco);
+            }
+            //VOLVER A AGREGAR EL ARCO ELIMINADO
+            this->agregarArcoND(i,w);
             vecinos.pop_front();
         }
 

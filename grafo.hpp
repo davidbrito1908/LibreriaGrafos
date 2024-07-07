@@ -58,6 +58,11 @@ class Grafo{
 
         list<int> caminoDijkstra(int v, int w);
         bool esCompleto();
+
+        //REVISAR CAMINOS HAMILTONIANOS
+        list<list<Tipo>> Grafo<Tipo>::caminosHamiltonianos();
+        void caminosHamiltonianos(Tipo actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<Tipo>> *caminos, list<Tipo> *caminoActual);
+
 };
 
 
@@ -503,5 +508,56 @@ list<int> Grafo<int>::caminoDijkstra(int v, int w){
 template<typename Tipo>
 bool Grafo<Tipo>::esCompleto(){
     return (this->nArcos == (this->nVertices * (this->nVertices - 1)));
+}
+template <typename Tipo>
+list<list<Tipo>> Grafo<Tipo>::caminosHamiltonianos(){
+    int i,j, nVisitados = 1;
+    list<list<int>> result;
+    list<int> cam;
+    vector<bool> visitados;
+    float peso=0;
+
+    for(i=0;i<this->nVertices;i++){
+        peso = 0;
+        nVisitados=1;
+        for(j=0;j<this->nVertices;j++){
+            visitados.at(j) = false;
+        }
+        visitados.at(i) = true;
+        cam.clear();
+        cam.push_back(i);
+        caminosHamiltonianos(i,&visitados, &nVisitados, &peso, &result, &cam);
+    }
+    return result;
+}
+
+template <typename Tipo>
+void Grafo<Tipo>::caminosHamiltonianos(Tipo actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<Tipo>> *caminos, list<Tipo> *caminoActual){
+    
+    //INICIALIZAR ALTERNATIVAS
+    list<Tipo>vecinos = this->sucesores(i);
+    while(!vecinos.empty()){
+        //INICIALIZAR PASO
+        w = vecinos.front();
+        //VERIFICAR SI EL PASO ES VALIDO
+        if(!visitados->at(w)){
+            //PROCESAR PASO
+            visitados->at(w) = true;
+            *peso = *peso + this->getPesoArco(i,w);
+            caminoActual->push_back(w);
+            *nVisitados++;
+            //VERIFICAR SI ES SOLUCION
+            if(*nVisitados == this->nVertices){
+                caminos->push_back(camino);
+            }
+            //SIGUIENTE PASO
+            this->caminosHamiltonianos(w, visitados, nVisitados, peso, caminos, caminoActual);
+            //BORRAR PASO
+            visitados->at(w) = false;
+            *peso = *peso - this->getPesoArco(i,w);
+            caminoActual->pop_back();
+            *nVisitados--;
+        }
+    }
 }
 #endif
