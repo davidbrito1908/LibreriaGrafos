@@ -60,8 +60,7 @@ class Grafo{
         bool esCompleto();
 
         //REVISAR CAMINOS HAMILTONIANOS
-        list<list<Tipo>> caminosHamiltonianos();
-        void caminosHamiltonianos(Tipo actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<Tipo>> *caminos, list<Tipo> *caminoActual);
+        void hamiltonianos(Tipo actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<Tipo>> *caminos, list<Tipo> *caminoActual);
 
 };
 
@@ -527,33 +526,13 @@ template<typename Tipo>
 bool Grafo<Tipo>::esCompleto(){
     return (this->nArcos == (this->nVertices * (this->nVertices - 1)));
 }
-template <typename Tipo>
-list<list<Tipo>> Grafo<Tipo>::caminosHamiltonianos(){
-    int i,j, nVisitados = 1;
-    list<list<int>> result;
-    list<int> cam;
-    vector<bool> visitados;
-    float peso=0;
 
-    for(i=0;i<this->nVertices;i++){
-        peso = 0;
-        nVisitados=1;
-        for(j=0;j<this->nVertices;j++){
-            visitados.at(j) = false;
-        }
-        visitados.at(i) = true;
-        cam.clear();
-        cam.push_back(i);
-        caminosHamiltonianos(i,&visitados, &nVisitados, &peso, &result, &cam);
-    }
-    return result;
-}
 
-template <typename Tipo>
-void Grafo<Tipo>::caminosHamiltonianos(Tipo i, vector<bool> *visitados, int *nVisitados, float *peso, list<list<Tipo>> *caminos, list<Tipo> *caminoActual){
-    Tipo w;
+template <>
+void Grafo<int>::hamiltonianos(int i, vector<bool> *visitados, int *nVisitados, float *peso, list<list<int>> *caminos, list<int> *caminoActual){
+    int w;
     //INICIALIZAR ALTERNATIVAS
-    list<Tipo>vecinos = this->sucesores(i);
+    list<int>vecinos = this->sucesores(i);
     while(!vecinos.empty()){
         //INICIALIZAR PASO
         w = vecinos.front();
@@ -563,19 +542,21 @@ void Grafo<Tipo>::caminosHamiltonianos(Tipo i, vector<bool> *visitados, int *nVi
             visitados->at(w) = true;
             *peso = *peso + this->getPesoArco(i,w);
             caminoActual->push_back(w);
-            *nVisitados++;
+            *nVisitados = *nVisitados + 1;
             //VERIFICAR SI ES SOLUCION
             if(*nVisitados == this->nVertices){
-                caminos->push_back(caminoActual);
+                caminos->push_back(*caminoActual);
+            }else{
+                //SIGUIENTE PASO
+                this->hamiltonianos(w, visitados, nVisitados, peso, caminos, caminoActual);
             }
-            //SIGUIENTE PASO
-            this->caminosHamiltonianos(w, visitados, nVisitados, peso, caminos, caminoActual);
             //BORRAR PASO
             visitados->at(w) = false;
             *peso = *peso - this->getPesoArco(i,w);
             caminoActual->pop_back();
-            *nVisitados--;
+            *nVisitados = *nVisitados - 1;
         }
+        vecinos.pop_front();
     }
 }
 #endif

@@ -64,12 +64,23 @@ int main(){
         cout << "No es completo";  
     }*/
 
-    list<list<string>> puentes = G.puentes();
+    /*list<list<string>> puentes = G.puentes();
     while(!puentes.empty()){   
         list<string> a = puentes.front();
         cout <<endl<< "(" << a.front() <<", "<<a.back()<<")"<<endl;
         puentes.pop_front(); 
-    }  
+    }*/
+    list<list<string>> c = G.caminosHamiltonianos();
+    list<string> aux;
+    while(!c.empty()){    
+        aux = c.front(); 
+        while(!aux.empty()){
+            cout << aux.front() << "->";
+            aux.pop_front();
+        }
+        cout<<endl;
+        c.pop_front(); 
+    }    
 
     return 0; 
 
@@ -77,7 +88,7 @@ int main(){
  
 
 
-void pruebas(){
+void pruebas(){  
 
 
        //cout<<endl<<endl<<endl;
