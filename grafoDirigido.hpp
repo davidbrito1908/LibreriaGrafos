@@ -16,6 +16,7 @@ class GrafoDirigido: public Grafo<Tipo>{
 
         int NComponentesFConexas(); //NO LISTO
         list<Tipo> caminoMenor(Tipo v, Tipo w);
+        list<list<Tipo>> caminosHamiltonianos();
 };
 
 
@@ -104,5 +105,47 @@ list<Tipo> GrafoDirigido<Tipo>::caminoMenor(Tipo v, Tipo w){
         camino.pop_front();
     }
     return resultado;
+}
+template <typename Tipo>
+list<list<Tipo>> GrafoDirigido<Tipo>::caminosHamiltonianos(){
+    int i,j, nVisitados = 1;
+    list<list<int>> result;
+    list<list<Tipo>> hamiltonianos;
+    list<int> camAux;
+    list<Tipo> cam;
+    vector<bool> visitados;
+    float peso=0;
+    vector<Tipo> m;
+    GrafoDirigido<int> aux = this->mapear(&m); 
+    for(i=0;i<this->nVertices;i++){
+        visitados.emplace_back(false);
+    }
+
+    for(i=0;i<this->nVertices;i++){
+        peso = 0;
+        nVisitados=1;
+        for(j=0;j<this->nVertices;j++){
+            visitados.at(j) = false;
+        }
+        visitados.at(i) = true;
+        camAux.clear();
+        cam.clear();
+        camAux.push_back(i);
+        aux.hamiltonianos(i,&visitados, &nVisitados, &peso, &result, &camAux);
+
+    }
+    //DESMAPEAR CAMINOS
+    while(!result.empty()){
+        cam.clear();
+        camAux = result.front();
+        while(!camAux.empty()){
+            cam.push_back(m.at(camAux.front()));
+            camAux.pop_front();
+        }
+        //AGREGAR CAMINO DESMAPEADO
+        hamiltonianos.push_back(cam);
+        result.pop_front();
+    }
+    return hamiltonianos;
 }
 #endif

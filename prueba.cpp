@@ -15,7 +15,7 @@ void leer(GrafoDirigido<string> *g){
 
         g->agregarVertice(v);
         g->agregarVertice(w);
-        g->agregarArco(v,w);
+        g->agregarArco(v,w, peso);
     }
 
 } 
@@ -35,13 +35,13 @@ void leerND(GrafoNoDirigido<string> *g){
 
 
 int main(){
-    GrafoNoDirigido<string> G;
-    leerND(&G);
+    GrafoDirigido<string> G;
+    leer(&G);
     G.escribirGrafo();
     vector<string> map;
-    GrafoNoDirigido<int> A, M = G.mapear(&map);
+    GrafoDirigido<int> A, M = G.mapear(&map);
     float p;
-    M.arbolExpandidoMinimo(&A, &p);
+    //M.arbolExpandidoMinimo(&A, &p);
 
     cout<<endl;
     for(int i = 0; i<A.getNVertices();i++){
@@ -49,7 +49,7 @@ int main(){
 
     }
     M.escribirGrafo();
-    A.eliminarArcoND(0,1);
+    //A.eliminarArcoND(0,1);
     A.escribirGrafo(); 
     //cout<<endl<<p;
 
