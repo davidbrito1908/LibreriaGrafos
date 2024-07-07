@@ -11,7 +11,7 @@ class Vertice{
         tipo info;
         Vertice<tipo> *sig;
         Arco<tipo> *listaAdy;
-        int grado;
+        int gradoIn, gradoOut;
     public:
         tipo getInfo(){
             return this->info;
@@ -22,8 +22,11 @@ class Vertice{
         Arco<tipo> * getArcos(){
             return this->listaAdy;
         }
-        int getGrado(){
-            return this->grado;
+        int getGradoIn(){
+            return this->gradoIn;
+        }
+        int getGradoOut(){
+            return this->gradoOut;
         }
         void setInfo(tipo info){
             this->info = info;
@@ -34,8 +37,11 @@ class Vertice{
         void setArcos(Arco<tipo> *adyacente){
             this->listaAdy = adyacente;
         }
-        void setGrado(int nuevo){
-            this->grado = nuevo;
+        void setGradoIn(int nuevo){
+            this->gradoIn = nuevo;
+        }
+        void setGradoOut(int nuevo){
+            this->gradoOut = nuevo;
         }
 };
 #endif

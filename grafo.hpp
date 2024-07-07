@@ -42,8 +42,8 @@ class Grafo{
         bool existeArco(Tipo v, Tipo w); //FUNCIONAL
         float getPesoArco(Tipo v, Tipo w); //FUNCIONAL
         void modificarPesoArco(Tipo v, Tipo w, float nuevo); //FUNCIONAL
-        void agregarArco(Tipo v, Tipo w, float peso = 0, bool *repetido = nullptr); //FUNCIONAL
-        void eliminarArco (Tipo v, Tipo w, bool *band = nullptr); //FUNCIONAL
+        void agregarArco(Tipo v, Tipo w, float peso = 0); //FUNCIONAL
+        void eliminarArco (Tipo v, Tipo w); //FUNCIONAL
         //VERTICES
         void agregarVertice (Tipo v); //FUNCIONAL
         void eliminarVertice (Tipo v); //FUNCIONAL
@@ -249,7 +249,7 @@ void Grafo<Tipo>::modificarPesoArco(Tipo v, Tipo w, float nuevo){
 }
 
 template <typename Tipo>
-void Grafo<Tipo>::agregarArco(Tipo v, Tipo w, float peso, bool *repetido){
+void Grafo<Tipo>::agregarArco(Tipo v, Tipo w, float peso){
     Vertice<Tipo> *inicio = this->primero, *objetivo = nullptr, *verticeAux;
     Arco<Tipo> *ady, *nuevo;
     if (inicio != nullptr) {
@@ -279,17 +279,11 @@ void Grafo<Tipo>::agregarArco(Tipo v, Tipo w, float peso, bool *repetido){
             if (ady != nullptr){
                 while (ady->getSig() != nullptr){
                     if(ady->getInfo()->getInfo() == w){
-                        if(repetido != nullptr){
-                            *repetido = true;
-                        }
                         return;
                     }
                     ady=ady->getSig();
                 }
                 if(ady->getInfo()->getInfo() == w){
-                    if(repetido != nullptr){
-                        *repetido = true;
-                    }
                     return;
                 }
                 nuevo = new Arco<Tipo>;
@@ -297,16 +291,16 @@ void Grafo<Tipo>::agregarArco(Tipo v, Tipo w, float peso, bool *repetido){
                 nuevo->setSig(nullptr);
                 nuevo->setPeso(peso);
                 ady->setSig(nuevo);
-                verticeAux->setGrado(verticeAux->getGrado() + 1);
-                objetivo->setGrado(objetivo->getGrado() + 1);
+                verticeAux->setGradoOut(verticeAux->getGradoOut() + 1);
+                objetivo->setGradoIn(objetivo->getGradoIn() + 1);
             }else{
                 nuevo = new Arco<Tipo>;
                 nuevo->setInfo(objetivo);
                 nuevo->setSig(nullptr);
                 nuevo->setPeso(peso);
                 verticeAux->setArcos(nuevo);
-                verticeAux->setGrado(verticeAux->getGrado() + 1);
-                objetivo->setGrado(objetivo->getGrado() + 1);
+                verticeAux->setGradoOut(verticeAux->getGradoOut() + 1);
+                objetivo->setGradoIn(objetivo->getGradoIn() + 1);
 
             }
             this->nArcos = this-> nArcos + 1;
@@ -317,7 +311,7 @@ void Grafo<Tipo>::agregarArco(Tipo v, Tipo w, float peso, bool *repetido){
 }
 
 template <typename Tipo>
-void Grafo<Tipo>::eliminarArco (Tipo v, Tipo w, bool *band){
+void Grafo<Tipo>::eliminarArco (Tipo v, Tipo w){
     Vertice<Tipo> *inicio = this->primero;
     Arco<Tipo> *ady, *objetivo;
 
@@ -332,8 +326,8 @@ void Grafo<Tipo>::eliminarArco (Tipo v, Tipo w, bool *band){
         if(ady != nullptr){
             if(ady->getInfo()->getInfo() == w){
                 inicio->setArcos(ady->getSig());
-                inicio->setGrado(inicio->getGrado() - 1);
-                ady->getInfo()->setGrado(ady->getInfo()->getGrado() - 1);
+                inicio->setGradoOut(inicio->getGradoOut() - 1);
+                ady->getInfo()->setGradoIn(ady->getInfo()->getGradoIn() - 1);
                 delete ady;
                 this->nArcos = this->nArcos - 1;
             }else{
@@ -345,20 +339,15 @@ void Grafo<Tipo>::eliminarArco (Tipo v, Tipo w, bool *band){
                     ady->setSig(objetivo->getSig());
                     objetivo->setSig(nullptr);
 
-                    inicio->setGrado(inicio->getGrado() - 1);
-                    objetivo->getInfo()->setGrado(objetivo->getInfo()->getGrado() - 1);
+                    inicio->setGradoOut(inicio->getGradoOut() - 1);
+                    objetivo->getInfo()->setGradoIn(objetivo->getInfo()->getGradoIn() - 1);
                     delete objetivo;
                     this->nArcos = this->nArcos - 1;
 
                 }
             }
         }
-    }else{
-        if(band != nullptr){
-            *band = true;
-        }
-    }
-    
+    }    
 }
 
 
@@ -379,6 +368,8 @@ void Grafo<Tipo>::agregarVertice (Tipo v){
     nuevo->setInfo(v);
     nuevo->setSig(inicio);
     nuevo->setArcos(nullptr);
+    nuevo->setGradoIn(0);
+    nuevo->setGradoOut(0);
     this->setPrimero(nuevo);
     this->nVertices = this->nVertices + 1;
 }
@@ -437,7 +428,7 @@ template<typename Tipo>
 void Grafo<Tipo>::escribirGrafo(){
     Vertice<Tipo> *v = this->primero;  
     while(v != nullptr){
-        cout<< v->getInfo()<<"{" << v->getGrado()<<"}"<<" = ";
+        cout<< v->getInfo()<<"{" << v->getGradoIn()<<" | "<<v->getGradoOut()<<"}"<<" = ";
         Arco<Tipo> *a = v->getArcos();
         while(a != nullptr){
             //ESCRITURA DEL ARCO -> (origen,destino)[peso]

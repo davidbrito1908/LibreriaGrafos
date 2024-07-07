@@ -41,16 +41,17 @@ int main(){
     vector<string> map;
     GrafoNoDirigido<int> A, M = G.mapear(&map);
     float p;
-    //M.arbolExpandidoMinimo(&A, &p);
+    M.arbolExpandidoMinimo(&A, &p);
 
     cout<<endl;
-    for(int i = 0; i<A.getNVertices();i++){
+    for(int i = 0; i<M.getNVertices();i++){
         cout<<endl<<i<<" Es igual a:" << map[i]<<endl;    
 
     }
     M.escribirGrafo();
-    //A.eliminarArcoND(0,1);
-    A.escribirGrafo(); 
+    //M.eliminarArco(0,1);
+    //M.escribirGrafo();
+    //A.escribirGrafo(); 
     //cout<<endl<<p;
 
     /*if(A.esConexo()){  

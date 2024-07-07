@@ -70,30 +70,18 @@ void GrafoNoDirigido<Tipo>::modificarPesoArcoND(Tipo v, Tipo w, float nuevo){
 template <typename Tipo>
 void GrafoNoDirigido<Tipo>::agregarArcoND(Tipo v, Tipo w, float peso){
     Vertice<Tipo> *V = this->getVertice(v), *W = this->getVertice(w);
-    bool band=false;
     if((V!= nullptr) && (W != nullptr)){
-        this->agregarArco(v,w,peso, &band);
-        this->agregarArco(w,v,peso, &band);
-        //Se resta 1 para no agregar 1 al grado dos veces
-        if(!band){
-            V->setGrado(V->getGrado() - 1);
-            W->setGrado(W->getGrado() - 1);
-        }
+        this->agregarArco(v,w,peso);
+        this->agregarArco(w,v,peso);
     }
 }
 
 template <typename Tipo>
 void GrafoNoDirigido<Tipo>::eliminarArcoND(Tipo v, Tipo w){
     Vertice<Tipo> *V = this->getVertice(v), *W = this->getVertice(w);
-    bool band = false;
     if((V!= nullptr) && (W != nullptr)){
-        this->eliminarArco(v,w, &band);
-        this->eliminarArco(w,v, &band);
-        //Se suma 1 para no quitar dos veces el grado correspondiente al mismo arco
-        if(!band){
-            V->setGrado(V->getGrado() + 1);
-            W->setGrado(W->getGrado() + 1);
-        }
+        this->eliminarArco(v,w);
+        this->eliminarArco(w,v);
     }
 }
 
