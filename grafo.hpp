@@ -42,8 +42,8 @@ class Grafo{
         bool existeArco(Tipo v, Tipo w); //FUNCIONAL
         float getPesoArco(Tipo v, Tipo w); //FUNCIONAL
         void modificarPesoArco(Tipo v, Tipo w, float nuevo); //FUNCIONAL
-        void agregarArco(Tipo v, Tipo w, float peso = 0); //FUNCIONAL
-        void eliminarArco (Tipo v, Tipo w); //FUNCIONAL
+        void agregarArco(Tipo v, Tipo w, float peso = 0, bool *repetido = nullptr); //FUNCIONAL
+        void eliminarArco (Tipo v, Tipo w, bool *band = nullptr); //FUNCIONAL
         //VERTICES
         void agregarVertice (Tipo v); //FUNCIONAL
         void eliminarVertice (Tipo v); //FUNCIONAL
@@ -60,7 +60,7 @@ class Grafo{
         bool esCompleto();
 
         //REVISAR CAMINOS HAMILTONIANOS
-        list<list<Tipo>> Grafo<Tipo>::caminosHamiltonianos();
+        list<list<Tipo>> caminosHamiltonianos();
         void caminosHamiltonianos(Tipo actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<Tipo>> *caminos, list<Tipo> *caminoActual);
 
 };
@@ -249,7 +249,7 @@ void Grafo<Tipo>::modificarPesoArco(Tipo v, Tipo w, float nuevo){
 }
 
 template <typename Tipo>
-void Grafo<Tipo>::agregarArco(Tipo v, Tipo w, float peso){
+void Grafo<Tipo>::agregarArco(Tipo v, Tipo w, float peso, bool *repetido){
     Vertice<Tipo> *inicio = this->primero, *objetivo = nullptr, *verticeAux;
     Arco<Tipo> *ady, *nuevo;
     if (inicio != nullptr) {
@@ -279,11 +279,17 @@ void Grafo<Tipo>::agregarArco(Tipo v, Tipo w, float peso){
             if (ady != nullptr){
                 while (ady->getSig() != nullptr){
                     if(ady->getInfo()->getInfo() == w){
+                        if(repetido != nullptr){
+                            *repetido = true;
+                        }
                         return;
                     }
                     ady=ady->getSig();
                 }
                 if(ady->getInfo()->getInfo() == w){
+                    if(repetido != nullptr){
+                        *repetido = true;
+                    }
                     return;
                 }
                 nuevo = new Arco<Tipo>;
@@ -291,12 +297,16 @@ void Grafo<Tipo>::agregarArco(Tipo v, Tipo w, float peso){
                 nuevo->setSig(nullptr);
                 nuevo->setPeso(peso);
                 ady->setSig(nuevo);
+                verticeAux->setGrado(verticeAux->getGrado() + 1);
+                objetivo->setGrado(objetivo->getGrado() + 1);
             }else{
                 nuevo = new Arco<Tipo>;
                 nuevo->setInfo(objetivo);
                 nuevo->setSig(nullptr);
                 nuevo->setPeso(peso);
                 verticeAux->setArcos(nuevo);
+                verticeAux->setGrado(verticeAux->getGrado() + 1);
+                objetivo->setGrado(objetivo->getGrado() + 1);
 
             }
             this->nArcos = this-> nArcos + 1;
@@ -307,7 +317,7 @@ void Grafo<Tipo>::agregarArco(Tipo v, Tipo w, float peso){
 }
 
 template <typename Tipo>
-void Grafo<Tipo>::eliminarArco (Tipo v, Tipo w){
+void Grafo<Tipo>::eliminarArco (Tipo v, Tipo w, bool *band){
     Vertice<Tipo> *inicio = this->primero;
     Arco<Tipo> *ady, *objetivo;
 
@@ -322,6 +332,8 @@ void Grafo<Tipo>::eliminarArco (Tipo v, Tipo w){
         if(ady != nullptr){
             if(ady->getInfo()->getInfo() == w){
                 inicio->setArcos(ady->getSig());
+                inicio->setGrado(inicio->getGrado() - 1);
+                ady->getInfo()->setGrado(ady->getInfo()->getGrado() - 1);
                 delete ady;
                 this->nArcos = this->nArcos - 1;
             }else{
@@ -333,11 +345,17 @@ void Grafo<Tipo>::eliminarArco (Tipo v, Tipo w){
                     ady->setSig(objetivo->getSig());
                     objetivo->setSig(nullptr);
 
+                    inicio->setGrado(inicio->getGrado() - 1);
+                    objetivo->getInfo()->setGrado(objetivo->getInfo()->getGrado() - 1);
                     delete objetivo;
                     this->nArcos = this->nArcos - 1;
 
                 }
             }
+        }
+    }else{
+        if(band != nullptr){
+            *band = true;
         }
     }
     
@@ -419,7 +437,7 @@ template<typename Tipo>
 void Grafo<Tipo>::escribirGrafo(){
     Vertice<Tipo> *v = this->primero;  
     while(v != nullptr){
-        cout<< v->getInfo()<<" = ";
+        cout<< v->getInfo()<<"{" << v->getGrado()<<"}"<<" = ";
         Arco<Tipo> *a = v->getArcos();
         while(a != nullptr){
             //ESCRITURA DEL ARCO -> (origen,destino)[peso]
@@ -532,8 +550,8 @@ list<list<Tipo>> Grafo<Tipo>::caminosHamiltonianos(){
 }
 
 template <typename Tipo>
-void Grafo<Tipo>::caminosHamiltonianos(Tipo actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<Tipo>> *caminos, list<Tipo> *caminoActual){
-    
+void Grafo<Tipo>::caminosHamiltonianos(Tipo i, vector<bool> *visitados, int *nVisitados, float *peso, list<list<Tipo>> *caminos, list<Tipo> *caminoActual){
+    Tipo w;
     //INICIALIZAR ALTERNATIVAS
     list<Tipo>vecinos = this->sucesores(i);
     while(!vecinos.empty()){
@@ -548,7 +566,7 @@ void Grafo<Tipo>::caminosHamiltonianos(Tipo actual, vector<bool> *visitados, int
             *nVisitados++;
             //VERIFICAR SI ES SOLUCION
             if(*nVisitados == this->nVertices){
-                caminos->push_back(camino);
+                caminos->push_back(caminoActual);
             }
             //SIGUIENTE PASO
             this->caminosHamiltonianos(w, visitados, nVisitados, peso, caminos, caminoActual);

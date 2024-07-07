@@ -28,7 +28,7 @@ void leerND(GrafoNoDirigido<string> *g){
 
         g->agregarVertice(v);
         g->agregarVertice(w);
-        g->agregarArcoND(v,w, peso);
+        g->agregarArcoND(v,w, peso); 
     }
 
 }
@@ -48,11 +48,12 @@ int main(){
         cout<<endl<<i<<" Es igual a:" << map[i]<<endl;    
 
     }
-    A.escribirGrafo(); 
-    cout<<endl<<p;
+    M.escribirGrafo();
     A.eliminarArcoND(0,1);
+    A.escribirGrafo(); 
+    //cout<<endl<<p;
 
-    if(A.esConexo()){  
+    /*if(A.esConexo()){  
         cout<<"Es conexo";
     } else{
         cout << "No es conexo";  
@@ -61,19 +62,19 @@ int main(){
         cout<<"Es completo";
     } else{
         cout << "No es completo";  
-    }
+    }*/
 
     list<list<string>> puentes = G.puentes();
     while(!puentes.empty()){   
         list<string> a = puentes.front();
         cout <<endl<< "(" << a.front() <<", "<<a.back()<<")"<<endl;
-        puentes.pop_front();
-    }
+        puentes.pop_front(); 
+    }  
 
     return 0; 
 
 }
-
+ 
 
 
 void pruebas(){
@@ -104,13 +105,13 @@ void pruebas(){
     vector<string> mapeo; 
     GrafoNoDirigido<int> M = N.mapear(&mapeo);
     //int i;
-
+    
     /*for(i=0;i<M.getNVertices(); i++){
         //cout<<M.getNVertices()<<"  "<<mapeo.at(i)<<endl;
         cout<<"Posicion " << i << " corresponde a: " << mapeo.at(i)<<endl;
     }
     cout<<endl; */
-   
+     
    
     N.escribirGrafo();
     M.escribirGrafo();
