@@ -31,9 +31,12 @@ class GrafoNoDirigido: public Grafo<Tipo>{
         bool esConexo();
         list<list<Tipo>> caminosHamiltonianos();
         list<Tipo> caminoHamiltonianoMinimo();
+        void eulerianos(list<int> *cam, int v, list<list<int>> *caminos);
+        list<list<Tipo>> getCaminosEulerianos();
 
 
         //PARA GRAFOS QUE YA ESTEN MAPEADOS
+        list<list<int>> caminosEulerianos();
         bool esConexoM();
         list<list<Tipo>> puentesM();
 };
@@ -69,20 +72,14 @@ void GrafoNoDirigido<Tipo>::modificarPesoArcoND(Tipo v, Tipo w, float nuevo){
 
 template <typename Tipo>
 void GrafoNoDirigido<Tipo>::agregarArcoND(Tipo v, Tipo w, float peso){
-    Vertice<Tipo> *V = this->getVertice(v), *W = this->getVertice(w);
-    if((V!= nullptr) && (W != nullptr)){
-        this->agregarArco(v,w,peso);
-        this->agregarArco(w,v,peso);
-    }
+    this->agregarArco(v,w,peso);
+    this->agregarArco(w,v,peso);
 }
 
 template <typename Tipo>
 void GrafoNoDirigido<Tipo>::eliminarArcoND(Tipo v, Tipo w){
-    Vertice<Tipo> *V = this->getVertice(v), *W = this->getVertice(w);
-    if((V!= nullptr) && (W != nullptr)){
-        this->eliminarArco(v,w);
-        this->eliminarArco(w,v);
-    }
+    this->eliminarArco(v,w);
+    this->eliminarArco(w,v);
 }
 
 
@@ -404,4 +401,60 @@ list<Tipo> GrafoNoDirigido<Tipo>::caminoHamiltonianoMinimo(){
     }
     return result;
 }
+template<>
+void GrafoNoDirigido<int>::eulerianos(list<int> *cam, int v, list<list<int>> *caminos){
+    list<int> vecinos = this->vecinos(v);
+    int w;
+    while(!vecinos.empty()){
+        w = vecinos.front();
+        cam->push_back(w);
+        this->eliminarArcoND(v,w);
+        if(this->nArcos == 0){
+            caminos->push_back(*cam);
+        }   
+        this->eulerianos(cam, w, caminos);
+
+        this->agregarArcoND(v,w);
+        cam->pop_back();
+        vecinos.pop_front();
+    }
+}
+template<>
+list<list<int>> GrafoNoDirigido<int>::caminosEulerianos(){
+    list<int> caminoAux;
+    list<list<int>> caminos;
+    vector<int> in, out;
+    int v=-1;
+    this->contarGrados(&in, &out);
+    if(this->existeEuleriano(in, out, &v)){
+        for(int i=0; i<this->nVertices;i++){
+            caminoAux.push_back(i);
+            this->eulerianos(&caminoAux,i, &caminos);
+            caminoAux.clear();
+        }
+    }
+    return caminos;
+}
+template<typename Tipo>
+list<list<Tipo>> GrafoNoDirigido<Tipo>::getCaminosEulerianos(){
+    vector<Tipo> m;
+    GrafoNoDirigido<int> grafoM = this->mapear(&m);
+    list<list<int>> resultM = grafoM.caminosEulerianos();
+    list<list<Tipo>> result;
+    list<int> aux;
+    list<Tipo> cam;
+    //DESMAPEAR CAMINOS EULERIANOS
+    while(!resultM.empty()){
+        aux=resultM.front();
+        while(!aux.empty()){
+            cam.push_back(m.at(aux.front()));
+            aux.pop_front();
+        }
+        result.push_back(cam);
+        cam.clear();
+        resultM.pop_front();
+    }
+    return result;
+}
+
 #endif

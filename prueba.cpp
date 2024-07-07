@@ -34,20 +34,20 @@ void leerND(GrafoNoDirigido<string> *g){
 }
 
 
-int main(){
-    GrafoNoDirigido<string> G;
-    leerND(&G);
-    G.escribirGrafo();
+int main(){ 
+    GrafoDirigido<string> G;
+    leer(&G);  
+    //G.escribirGrafo();
     vector<string> map;
-    GrafoNoDirigido<int> A, M = G.mapear(&map);
+    GrafoDirigido<int> A, M = G.mapear(&map);
     float p;
-    M.arbolExpandidoMinimo(&A, &p);
-
+    /*M.arbolExpandidoMinimo(&A, &p);
+*/ 
     cout<<endl;
     for(int i = 0; i<M.getNVertices();i++){
         cout<<endl<<i<<" Es igual a:" << map[i]<<endl;    
 
-    }
+    } 
     M.escribirGrafo();
     //M.eliminarArco(0,1);
     //M.escribirGrafo();
@@ -58,7 +58,7 @@ int main(){
         cout<<"Es conexo";
     } else{
         cout << "No es conexo";  
-    }
+    } 
     if(G.esCompleto()){  
         cout<<"Es completo";
     } else{
@@ -72,26 +72,37 @@ int main(){
         puentes.pop_front(); 
     }*/
     list<list<string>> c = G.caminosHamiltonianos();
-    list<string> aux;
+    cout << "M = " << M.getNArcos()<<endl;
+    list<list<string>> aux;
+    list<string> a;
     //while(!c.empty()){    
         //aux = c.front(); 
-        aux = G.caminoHamiltonianoMinimo();
+        aux = G.getCaminosEulerianos();
+        if (aux.empty()){
+            cout<<"NO HAY"; 
+        }
         while(!aux.empty()){
-            cout << aux.front() << "->";
+            a = aux.front();
+            while(!a.empty()){
+                cout << a.front() << "->";
+                a.pop_front();
+            }
+            cout<<endl;
             aux.pop_front();
         }
         cout<<endl;
         //c.pop_front(); 
-    //}    
+    //} 
+    G.escribirGrafo();    
 
-    return 0; 
+    return 0;   
 
 }
  
-
+  
 
 void pruebas(){  
-
+ 
 
        //cout<<endl<<endl<<endl;
 
@@ -124,12 +135,12 @@ void pruebas(){
         cout<<"Posicion " << i << " corresponde a: " << mapeo.at(i)<<endl;
     }
     cout<<endl; */
-     
+       
    
-    N.escribirGrafo();
-    M.escribirGrafo();
-    //N.NComponentes(); 
-    /*int c = M.NComponentes();
+    N.escribirGrafo(); 
+    M.escribirGrafo();  
+    //N.NComponentes();  
+    /*int c = M.NComponentes();   
     cout << endl      << c << " Componentes"<<endl;*/
     /*list<string> L = N.vecinos("Dos");
     if (L.empty()){

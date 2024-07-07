@@ -63,6 +63,8 @@ class Grafo{
         void hamiltonianos(int actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<int>> *caminos, list<int> *caminoActual);
         void hamiltonianoMinimo(int i, vector<bool> *visitados, int *nVisitados, float *peso, float *pesoMenor, list<int> *minimo, list<int> *caminoActual, bool *prim);
 
+        void contarGrados(vector<int> *in, vector<int> *out);
+        bool existeEuleriano(vector<int> in, vector<int> out, int *v);
 };
 
 
@@ -584,4 +586,33 @@ void Grafo<int>::hamiltonianoMinimo(int i, vector<bool> *visitados, int *nVisita
         vecinos.pop_front();
     }
 }
+
+template<>
+void Grafo<int>::contarGrados(vector<int> *in, vector<int> *out){
+    int i;
+    Vertice<int> *v;
+    for(i=0;i<this->getNVertices(); i++){
+        v = this->getVertice(i);
+        in->emplace_back(v->getGradoIn());
+        out->emplace_back(v->getGradoOut());
+    }
+}
+template<>
+bool Grafo<int>::existeEuleriano(vector<int> in, vector<int> out, int *v){
+    int i, vInicio=0, vFinal=0;
+    for(i=0;i<this->getNVertices();i++){
+        if((out.at(i) - in.at(i) > 1) || (in.at(i) - out.at(i))>1) return false;
+
+        if(out.at(i) - in.at(i) == 1){
+            *v=i;
+            vInicio++;
+        }else{
+            if(in.at(i) - out.at(i) == 1){
+                vFinal++;
+            }
+        }
+    }
+    return ((vInicio == 0) && (vFinal == 0)) || ((vInicio == 1) && (vFinal==1));
+}
+
 #endif

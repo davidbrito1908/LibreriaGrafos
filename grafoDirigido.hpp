@@ -18,6 +18,10 @@ class GrafoDirigido: public Grafo<Tipo>{
         list<Tipo> caminoMenor(Tipo v, Tipo w);
         list<list<Tipo>> caminosHamiltonianos();
         list<Tipo> caminoHamiltonianoMinimo();
+        list<list<int>> caminosEulerianos();
+        void eulerianos(list<int> *cam, int v, list<list<int>> *caminos);
+        list<list<Tipo>> getCaminosEulerianos();
+
 };
 
 
@@ -183,4 +187,64 @@ list<Tipo> GrafoDirigido<Tipo>::caminoHamiltonianoMinimo(){
     }
     return result;
 }
+template<>
+void GrafoDirigido<int>::eulerianos(list<int> *cam, int v, list<list<int>> *caminos){
+    list<int> sucesores = this->sucesores(v);
+    int w;
+    while(!sucesores.empty()){
+        w = sucesores.front();
+        cam->push_back(w);
+        this->eliminarArco(v,w);
+        if(this->nArcos == 0){
+            caminos->push_back(*cam);
+
+        }   
+        this->eulerianos(cam, w, caminos);
+
+        this->agregarArco(v,w);
+        cam->pop_back();
+        sucesores.pop_front();
+    }
+}
+
+template<>
+list<list<int>> GrafoDirigido<int>::caminosEulerianos(){
+    list<int> caminoAux;
+    list<list<int>> caminos;
+    vector<int> in, out;
+    int v=-1;
+    this->contarGrados(&in, &out);
+    if(this->existeEuleriano(in, out, &v)){
+        for(int i=0; i<this->nVertices;i++){
+            caminoAux.push_back(i);
+            this->eulerianos(&caminoAux,i, &caminos);
+            caminoAux.clear();
+        }
+    }
+    return caminos;
+}
+
+
+template<typename Tipo>
+list<list<Tipo>> GrafoDirigido<Tipo>::getCaminosEulerianos(){
+    vector<Tipo> m;
+    GrafoDirigido<int> grafoM = this->mapear(&m);
+    list<list<int>> resultM = grafoM.caminosEulerianos();
+    list<list<Tipo>> result;
+    list<int> aux;
+    list<Tipo> cam;
+    //DESMAPEAR CAMINOS EULERIANOS
+    while(!resultM.empty()){
+        aux=resultM.front();
+        while(!aux.empty()){
+            cam.push_back(m.at(aux.front()));
+            aux.pop_front();
+        }
+        result.push_back(cam);
+        cam.clear();
+        resultM.pop_front();
+    }
+    return result;
+}
+
 #endif
