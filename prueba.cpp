@@ -36,6 +36,7 @@ void leerND(GrafoNoDirigido<string> *g){
 
 int main(){ 
     GrafoNoDirigido<string> G;
+    G.construir();
     leerND(&G);  
     //G.escribirGrafo();
     vector<string> map;
@@ -47,13 +48,22 @@ int main(){
     for(int i = 0; i<M.getNVertices();i++){
         cout<<endl<<i<<" Es igual a:" << map[i]<<endl;    
 
-    } 
+    }       
     M.escribirGrafo();
     //M.eliminarArco(0,1);
     //M.escribirGrafo();
     //A.escribirGrafo(); 
     //cout<<endl<<p;
-
+    list<string> C = G.caminoMayor("A", "F");     
+    while(!C.empty()){
+        if(C.size() == 1){
+            cout<<C.front();
+        }else{
+            cout<<C.front()<<"->";
+        }
+        C.pop_front();
+    }       
+    cout<<endl;
     /*if(A.esConexo()){  
         cout<<"Es conexo";
     } else{

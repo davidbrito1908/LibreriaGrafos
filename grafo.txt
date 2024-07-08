@@ -1,7 +1,8 @@
-B A 0
-A C 0
-D B 0
-C E 0
-E D 0
-D C 0
-A D 0
+A B 2
+B C 3
+D E 2
+C E 8
+C D 5
+C G 10
+D G 2
+D F 1

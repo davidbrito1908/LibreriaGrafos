@@ -57,9 +57,11 @@ class Grafo{
 
 
         list<int> caminoDijkstra(int v, int w);
+        bool esCaminoDe(int a, int b, int inicio, vector<int> caminos);
+        list<int> mayorCamino(int v, int w);
         bool esCompleto();
 
-        //REVISAR CAMINOS HAMILTONIANOS
+        //CAMINOS HAMILTONIANOS
         void hamiltonianos(int actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<int>> *caminos, list<int> *caminoActual);
         void hamiltonianoMinimo(int i, vector<bool> *visitados, int *nVisitados, float *peso, float *pesoMenor, list<int> *minimo, list<int> *caminoActual, bool *prim);
         void cHamiltonianos(int i, int inicio, vector<bool> *visitados, int *nVisitados, float *peso, list<list<int>> *caminos, list<int> *caminoActual);
@@ -516,7 +518,89 @@ list<int> Grafo<int>::caminoDijkstra(int v, int w){
     }
     return resultado;
 }
+template<>
+bool Grafo<int>::esCaminoDe(int a, int b, int inicio, vector<int> caminos){
+    int act = b;
+    while((act != inicio)){
+        if(act == a){
+            return true;
+        }else{
+            act = caminos.at(act);
+        }
+    }
+    return false;
+}
 
+template<>
+list<int> Grafo<int>::mayorCamino(int v, int w){
+    vector<float> costos;
+    vector<int> camino;
+    list<int> resultado, vecinos;
+    queue<int> cola;
+    int i, actual, destino, aux;
+    float costo; 
+    bool band;
+    vector<bool> visitados;
+
+    for(i=0;i<this->getNVertices();i++){
+        costos.push_back(-1);
+        camino.push_back(-1);
+        visitados.emplace_back(false);
+    }
+    costos.at(v) = 0;
+    cola.push(v);
+    while(!cola.empty() && !band){
+        actual=cola.front();
+        visitados.at(actual) = true;
+        if (actual == w){
+            vecinos = this->predecesores(actual);
+            band = true;
+            while(!vecinos.empty()){
+                band =  band && visitados.at(vecinos.front());
+                vecinos.pop_front();
+            }
+            
+        }else{
+            vecinos = this->sucesores(actual);
+            while(!vecinos.empty()){
+                destino = vecinos.front();
+                costo = costos.at(actual) + this->getPesoArco(actual, destino); 
+                if(actual != v){
+                    if((this->esCaminoDe(destino, camino.at(actual), v, camino) && (destino != v) && (destino != camino.at(actual)))){
+                        if((costos.at(destino) + this->getPesoArco(actual, destino) + this->getPesoArco(actual,camino.at(actual))) > costos.at(camino.at(actual))){
+                            aux = camino.at(actual);
+                            camino.at(aux) = actual;
+                            camino.at(actual) = destino;
+                            costos.at(actual) = costos.at(destino) + this->getPesoArco(destino, actual);
+                            costos.at(aux) = costos.at(actual) + this->getPesoArco(actual, aux);
+                            cola.push(aux); 
+                        }
+                    }else{
+                        if((costo == -1) || (costo > costos.at(destino)) && (destino != v) && (destino != camino.at(actual))){
+                            costos.at(destino) = costo;
+                            camino.at(destino) = actual;
+                            cola.push(destino);
+                        }
+                    }
+
+                }else{
+                    costos.at(destino) = costo;
+                    camino.at(destino) = actual;
+                    cola.push(destino);
+                }
+                vecinos.pop_front();
+            }
+        }
+        cola.pop();
+    }
+    resultado.push_back(w);
+    actual = w;
+    while((actual != v) && (actual != -1)){
+        actual = camino.at(actual);
+        resultado.push_front(actual);
+    }
+    return resultado;
+}
 template<typename Tipo>
 bool Grafo<Tipo>::esCompleto(){
     return (this->nArcos == (this->nVertices * (this->nVertices - 1)));
