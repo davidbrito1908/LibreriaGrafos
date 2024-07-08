@@ -16,6 +16,7 @@ class GrafoDirigido: public Grafo<Tipo>{
 
         int NComponentesFConexas(); //NO LISTO
         list<Tipo> caminoMenor(Tipo v, Tipo w);
+        list<Tipo> caminoMayor(Tipo v, Tipo w);
         list<list<Tipo>> caminosHamiltonianos();
         list<Tipo> caminoHamiltonianoMinimo();
         list<list<Tipo>> ciclosHamiltonianos();
@@ -109,6 +110,31 @@ list<Tipo> GrafoDirigido<Tipo>::caminoMenor(Tipo v, Tipo w){
     while(!camino.empty()){
         resultado.push_back(mapeo[camino.front()]);
         camino.pop_front();
+    }
+    return resultado;
+}
+template <typename Tipo>
+list<Tipo> GrafoDirigido<Tipo>::caminoMayor(Tipo v, Tipo w){
+    vector<Tipo> mapeo;
+    GrafoDirigido<int> aux = this->mapear(&mapeo);
+    int inicio = this->buscarMapeo(mapeo, v, this->getNVertices()), fin = this->buscarMapeo(mapeo, w, this->getNVertices());
+    list<int> camino, caminoMayor;
+    vector<bool> visitados;
+    float peso=0, pesoMayor = -1;
+    bool primero = true;
+
+    int i;
+    for(i = 0; i<this->getNVertices(); i++){
+        visitados.emplace_back(false);
+    }
+
+    camino.push_back(inicio);
+    aux.mayorCamino(inicio, fin, peso, &visitados, &camino, &pesoMayor, &caminoMayor, &primero);
+
+    list<Tipo> resultado;
+    while(!caminoMayor.empty()){
+        resultado.push_back(mapeo[caminoMayor.front()]);
+        caminoMayor.pop_front();
     }
     return resultado;
 }

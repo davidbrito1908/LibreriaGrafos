@@ -35,12 +35,12 @@ void leerND(GrafoNoDirigido<string> *g){
 
 
 int main(){        
-    GrafoNoDirigido<string> G;
+    GrafoDirigido<string> G;
     G.construir();
-    leerND(&G);  
+    leer(&G);  
     //G.escribirGrafo();
     vector<string> map;
-    GrafoNoDirigido<int> A, M = G.mapear(&map);
+    GrafoDirigido<int> A, M = G.mapear(&map);
     float p;
     /*M.arbolExpandidoMinimo(&A, &p);
 */ 
