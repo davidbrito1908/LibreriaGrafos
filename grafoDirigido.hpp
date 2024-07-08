@@ -7,9 +7,14 @@
 using namespace std;
 
 template <typename Tipo>
+class GrafoNoDirigido;
+
+template <typename Tipo>
 class GrafoDirigido: public Grafo<Tipo>{
     public:
+        void copiar(Grafo<Tipo> *A);
         GrafoDirigido<int> mapear(vector<Tipo> *mapeo);
+        GrafoNoDirigido<Tipo> convertirEnNoDirigido();
         //Tipos
         bool esSumidero(Tipo v);
         bool esFuente(Tipo v);
@@ -25,6 +30,28 @@ class GrafoDirigido: public Grafo<Tipo>{
         list<list<Tipo>> getCaminosEulerianos();
 
 };
+
+template<typename Tipo>
+void GrafoDirigido<Tipo>::copiar(Grafo<Tipo> *A){
+    Vertice<Tipo> *aux;
+    Arco<Tipo> *arco;
+    float pesoAux;
+    aux = A->getPrimero();
+    while(aux != nullptr){
+        this->agregarVertice(aux->getInfo());
+        aux = aux->getSig();
+    }
+    aux = A->getPrimero();
+    while(aux != nullptr){
+        arco = aux->getArcos();
+        while(arco != nullptr){
+            pesoAux = arco->getPeso();
+            this->agregarArco(aux->getInfo(), arco->getInfo()->getInfo(), pesoAux);
+            arco = arco->getSig();
+        }
+        aux = aux->getSig();
+    }
+}
 
 
 template<typename Tipo>
@@ -58,6 +85,13 @@ GrafoDirigido<int> GrafoDirigido<Tipo>::mapear(vector<Tipo> *mapeo){
 
     return grafo;
 
+}
+template<typename Tipo>
+GrafoNoDirigido<Tipo> GrafoDirigido<Tipo>::convertirEnNoDirigido(){
+    GrafoNoDirigido<Tipo> C;
+    C.construir();
+    C.copiar(this); 
+    return C;
 }
 template <typename Tipo>
 bool GrafoDirigido<Tipo>::esSumidero(Tipo v){

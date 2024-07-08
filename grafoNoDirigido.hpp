@@ -9,6 +9,7 @@ using namespace std;
 template <typename Tipo>
 class GrafoNoDirigido: public Grafo<Tipo>{
     public:
+        void copiar(Grafo<Tipo> *A);
         list<Tipo> vecinos(Vertice<Tipo> *v); //FUNCIONAL
         list<Tipo> vecinos(Tipo v); //FUNCIONAL
 
@@ -42,6 +43,30 @@ class GrafoNoDirigido: public Grafo<Tipo>{
         bool esConexoM();
         list<list<Tipo>> puentesM();
 };
+
+
+
+template<typename Tipo>
+void GrafoNoDirigido<Tipo>::copiar(Grafo<Tipo> *A){
+    Vertice<Tipo> *aux;
+    Arco<Tipo> *arco;
+    float pesoAux;
+    aux = A->getPrimero();
+    while(aux != nullptr){
+        this->agregarVertice(aux->getInfo());
+        aux = aux->getSig();
+    }
+    aux = A->getPrimero();
+    while(aux != nullptr){
+        arco = aux->getArcos();
+        while(arco != nullptr){
+            pesoAux = arco->getPeso();
+            this->agregarArcoND(aux->getInfo(), arco->getInfo()->getInfo(), pesoAux);
+            arco = arco->getSig();
+        }
+        aux = aux->getSig();
+    }
+}
 
 
 template<typename Tipo>

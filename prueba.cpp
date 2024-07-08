@@ -35,24 +35,31 @@ void leerND(GrafoNoDirigido<string> *g){
 
 
 int main(){        
-    GrafoDirigido<string> G;
+    GrafoDirigido<string> G, K;
     G.construir();
     leer(&G);  
-    //G.escribirGrafo();
+    K.copiar(&G);
+    G.escribirGrafo();
+    cout<<endl;
+    K.escribirGrafo();
     vector<string> map;
     GrafoDirigido<int> A, M = G.mapear(&map);
     float p;
     /*M.arbolExpandidoMinimo(&A, &p);
 */ 
+    GrafoNoDirigido<string> W = G.convertirEnNoDirigido();
+    cout<<endl;           
+    W.escribirGrafo();
+    return 0;
     cout<<endl;
-    for(int i = 0; i<M.getNVertices();i++){
+    for(int i = 0; i<M.getNVertices();i++){ 
         cout<<endl<<i<<" Es igual a:" << map[i]<<endl;    
-
+   
     }       
     M.escribirGrafo();
     //M.eliminarArco(0,1);
     //M.escribirGrafo();
-    //A.escribirGrafo(); 
+    //A.escribirGrafo();  
     //cout<<endl<<p;
     list<string> C = G.caminoMayor("A", "F");                     
     while(!C.empty()){    

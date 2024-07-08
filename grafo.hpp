@@ -57,7 +57,6 @@ class Grafo{
 
 
         list<int> caminoDijkstra(int v, int w);
-        bool esCaminoDe(int a, int b, int inicio, vector<int> caminos);
         void mayorCamino(int v, int w, float peso, vector<bool> *visitados, list<int> *camino, float *pesoMayor, list<int> *caminoMayor, bool *prim);
         bool esCompleto();
 
@@ -671,5 +670,7 @@ bool Grafo<int>::existeEuleriano(vector<int> in, vector<int> out, int *v){
     }
     return ((vInicio == 0) && (vFinal == 0)) || ((vInicio == 1) && (vFinal==1));
 }
+
+
 
 #endif
