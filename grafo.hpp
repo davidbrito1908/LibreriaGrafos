@@ -58,7 +58,7 @@ class Grafo{
 
         list<int> caminoDijkstra(int v, int w);
         bool esCaminoDe(int a, int b, int inicio, vector<int> caminos);
-        list<int> mayorCamino(int v, int w);
+        void mayorCamino(int v, int w, float peso, vector<bool> *visitados, list<int> *camino, float *pesoMayor, list<int> *caminoMayor, bool *prim);
         bool esCompleto();
 
         //CAMINOS HAMILTONIANOS
@@ -518,88 +518,29 @@ list<int> Grafo<int>::caminoDijkstra(int v, int w){
     }
     return resultado;
 }
-template<>
-bool Grafo<int>::esCaminoDe(int a, int b, int inicio, vector<int> caminos){
-    int act = b;
-    while((act != inicio)){
-        if(act == a){
-            return true;
-        }else{
-            act = caminos.at(act);
-        }
-    }
-    return false;
-}
 
 template<>
-list<int> Grafo<int>::mayorCamino(int v, int w){
-    vector<float> costos;
-    vector<int> camino;
-    list<int> resultado, vecinos;
-    queue<int> cola;
-    int i, actual, destino, aux;
-    float costo; 
-    bool band;
-    vector<bool> visitados;
-
-    for(i=0;i<this->getNVertices();i++){
-        costos.push_back(-1);
-        camino.push_back(-1);
-        visitados.emplace_back(false);
-    }
-    costos.at(v) = 0;
-    cola.push(v);
-    while(!cola.empty() && !band){
-        actual=cola.front();
-        visitados.at(actual) = true;
-        if (actual == w){
-            vecinos = this->predecesores(actual);
-            band = true;
-            while(!vecinos.empty()){
-                band =  band && visitados.at(vecinos.front());
-                vecinos.pop_front();
+void Grafo<int>::mayorCamino(int v, int w, float peso, vector<bool> *visitados, list<int> *camino, float *pesoMayor, list<int> *caminoMayor, bool *prim){
+    list<int> vecinos = this->sucesores(v);
+    int sig;
+    while(!vecinos.empty()){
+        sig = vecinos.front();
+        if(!visitados->at(sig)){
+            visitados->at(sig) = true;
+            peso = peso + this->getPesoArco(v,sig);
+            camino->push_back(sig);
+            if ((sig == w) && ((peso > *pesoMayor) || *prim)){
+                *caminoMayor = *camino;
+                *pesoMayor = peso;
+                *prim = false;
             }
-            
-        }else{
-            vecinos = this->sucesores(actual);
-            while(!vecinos.empty()){
-                destino = vecinos.front();
-                costo = costos.at(actual) + this->getPesoArco(actual, destino); 
-                if(actual != v){
-                    if((this->esCaminoDe(destino, camino.at(actual), v, camino) && (destino != v) && (destino != camino.at(actual)))){
-                        if((costos.at(destino) + this->getPesoArco(actual, destino) + this->getPesoArco(actual,camino.at(actual))) > costos.at(camino.at(actual))){
-                            aux = camino.at(actual);
-                            camino.at(aux) = actual;
-                            camino.at(actual) = destino;
-                            costos.at(actual) = costos.at(destino) + this->getPesoArco(destino, actual);
-                            costos.at(aux) = costos.at(actual) + this->getPesoArco(actual, aux);
-                            cola.push(aux); 
-                        }
-                    }else{
-                        if((costo == -1) || (costo > costos.at(destino)) && (destino != v) && (destino != camino.at(actual))){
-                            costos.at(destino) = costo;
-                            camino.at(destino) = actual;
-                            cola.push(destino);
-                        }
-                    }
-
-                }else{
-                    costos.at(destino) = costo;
-                    camino.at(destino) = actual;
-                    cola.push(destino);
-                }
-                vecinos.pop_front();
-            }
+            this->mayorCamino(sig,w,peso,visitados, camino, pesoMayor, caminoMayor, prim);
+            camino->pop_back();
+            peso = peso - this->getPesoArco(v, sig);
+            visitados->at(sig) = false;
         }
-        cola.pop();
+        vecinos.pop_front();
     }
-    resultado.push_back(w);
-    actual = w;
-    while((actual != v) && (actual != -1)){
-        actual = camino.at(actual);
-        resultado.push_front(actual);
-    }
-    return resultado;
 }
 template<typename Tipo>
 bool Grafo<Tipo>::esCompleto(){

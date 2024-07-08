@@ -34,7 +34,7 @@ void leerND(GrafoNoDirigido<string> *g){
 }
 
 
-int main(){ 
+int main(){        
     GrafoNoDirigido<string> G;
     G.construir();
     leerND(&G);  
@@ -54,11 +54,11 @@ int main(){
     //M.escribirGrafo();
     //A.escribirGrafo(); 
     //cout<<endl<<p;
-    list<string> C = G.caminoMayor("A", "F");     
-    while(!C.empty()){
+    list<string> C = G.caminoMayor("A", "F");                     
+    while(!C.empty()){    
         if(C.size() == 1){
             cout<<C.front();
-        }else{
+        }else{ 
             cout<<C.front()<<"->";
         }
         C.pop_front();
@@ -91,7 +91,7 @@ int main(){
         if (aux.empty()){
             cout<<"NO HAY"; 
         }
-        while(!c.empty()){
+        /*while(!c.empty()){
             a = c.front();
             while(!a.empty()){
                 cout << a.front() << "->";
@@ -99,7 +99,7 @@ int main(){
             }
             cout<<endl;
             c.pop_front();
-        }
+        }*/
         cout<<endl;
         //c.pop_front(); 
     //} 

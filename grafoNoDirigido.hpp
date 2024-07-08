@@ -162,12 +162,23 @@ list<Tipo> GrafoNoDirigido<Tipo>::caminoMayor(Tipo v, Tipo w){
     vector<Tipo> mapeo;
     GrafoNoDirigido<int> aux = this->mapear(&mapeo);
     int inicio = this->buscarMapeo(mapeo, v, this->getNVertices()), fin = this->buscarMapeo(mapeo, w, this->getNVertices());
-    list<int> camino = aux.mayorCamino(inicio, fin);
+    list<int> camino, caminoMayor;
+    vector<bool> visitados;
+    float peso=0, pesoMayor = -1;
+    bool primero = true;
+
+    int i;
+    for(i = 0; i<this->getNVertices(); i++){
+        visitados.emplace_back(false);
+    }
+
+    camino.push_back(inicio);
+    aux.mayorCamino(inicio, fin, peso, &visitados, &camino, &pesoMayor, &caminoMayor, &primero);
 
     list<Tipo> resultado;
-    while(!camino.empty()){
-        resultado.push_back(mapeo[camino.front()]);
-        camino.pop_front();
+    while(!caminoMayor.empty()){
+        resultado.push_back(mapeo[caminoMayor.front()]);
+        caminoMayor.pop_front();
     }
     return resultado;
 }
