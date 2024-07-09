@@ -63,26 +63,25 @@ int main(){
     //cout<<endl<<p;
     list<string> L;
     L.push_back("B");
-    L.push_back("E");
-    list<string> C = G.caminoMenor("A", "F");     
-    list<string> D = G.caminoMenorConBloqueo("A", "F", L);                         
-    while(!C.empty()){    
+    list<string> C = G.caminoMenorConRequisito("V", "W", "H");     
+    //list<string> D = G.caminoMenorConBloqueo("A", "H", L);                         
+    while(!C.empty()){     
         if(C.size() == 1){
             cout<<C.front();
         }else{ 
             cout<<C.front()<<"->";
-        }
-        C.pop_front();
-    }    
+        }  
+        C.pop_front(); 
+    }
     cout<<endl;
-    while(!D.empty()){    
+    /*while(!D.empty()){    
         if(D.size() == 1){
             cout<<D.front();
         }else{ 
             cout<<D.front()<<"->";
         }
         D.pop_front();
-    }  
+    }  */
     /*if(A.esConexo()){  
         cout<<"Es conexo";
     } else{

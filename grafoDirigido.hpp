@@ -22,6 +22,7 @@ class GrafoDirigido: public Grafo<Tipo>{
         int NComponentesFConexas(); //NO LISTO
         list<Tipo> caminoMenor(Tipo v, Tipo w);
         list<Tipo> caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo> bloqueados);
+        list<Tipo> caminoMenorConRequisito(Tipo v, Tipo w, Tipo H);
         list<Tipo> caminoMayor(Tipo v, Tipo w);
         list<list<Tipo>> caminosHamiltonianos();
         list<Tipo> caminoHamiltonianoMinimo();
@@ -172,7 +173,44 @@ list<Tipo> GrafoDirigido<Tipo>::caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo>
     }
     return resultado;
 }
+template <typename Tipo>
+list<Tipo> GrafoDirigido<Tipo>::caminoMenorConRequisito(Tipo v, Tipo w, Tipo H){ 
+    list<Tipo> camino1, camino2;
+    list<Tipo> bloqueos, bloqueosCam1;
+    list<Tipo> resultado;
 
+    camino1 = this->caminoMenor(v, H);
+    if(!camino1.empty()){
+        //HACER CAMINO DEL REQUISITO AL DESTINO PERO SIN PASAR POR LOS VERTICES YA UTILIZADOS POR EL CAMINO DEL INICIO AL REQUISITO
+        bloqueos = camino1;
+        bloqueos.pop_back();
+        camino2 = this->caminoMenorConBloqueo(H,w,bloqueos);
+        //SI NO SE ENCUENTRA UN POSIBLE CAMINO, SE PONE COMO RESTRICCION DEL PRIMER CAMINO EL ULTIMO VERTICE ANTES DE LLEGAR AL REQUISITO
+        while(!camino1.empty() && camino2.empty()){
+            bloqueosCam1.push_back(bloqueos.back());
+            camino1 = this->caminoMenorConBloqueo(v, H, bloqueosCam1); //REBUSCAR CAMINO DE INICIO A REQUISITO AHORA CON VERTICES BLOQUEADOS
+            if(!camino1.empty()){
+                bloqueos = camino1;
+                bloqueos.pop_back();
+                //REBUSCAR CAMINO DE REQUISITO AL VERTICE FINAL CON LOS VERTICES DEL CAMINO 1 BLOQUEADOS
+                camino2 = this->caminoMenorConBloqueo(H,w,bloqueos); 
+            }
+        }
+    }
+    //SI EL CAMINO 1 NO ESTA VACIO, QUERE DECIR QUE SE ENCONTRO UN CAMINO VALIDO
+    if(!camino1.empty()){
+        while(!camino1.empty()){
+            resultado.push_back(camino1.front());
+            camino1.pop_front();
+        }
+        camino2.pop_front(); //Eliminar requisito del camino2 para evitar repetirlo en la lista del camino resultante
+        while(!camino2.empty()){
+            resultado.push_back(camino2.front());
+            camino2.pop_front();
+        }
+    }
+    return resultado;
+}
 template <typename Tipo>
 list<Tipo> GrafoDirigido<Tipo>::caminoMayor(Tipo v, Tipo w){
     vector<Tipo> mapeo;
