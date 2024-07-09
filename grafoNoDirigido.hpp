@@ -41,7 +41,7 @@ class GrafoNoDirigido: public Grafo<Tipo>{
         void eulerianos(list<int> *cam, int v, list<list<int>> *caminos);
         list<list<Tipo>> getCaminosEulerianos();
 
-
+        list<Tipo> puntosArticulacion();
         //PARA GRAFOS QUE YA ESTEN MAPEADOS
         list<list<int>> caminosEulerianos();
         bool esConexoM();
@@ -442,7 +442,7 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::puentes(){
             //ELIMINAR ARCO
             aux.eliminarArcoND(i,w);
             //VERIFICAR QUE EL GRAFO SIGA CONEXO (Si no es conexo, el arco es un arco puente)
-            if((!aux.esConexo()) && (i<w)){
+            if((!aux.esConexoM()) && (i<w)){
                 //Agregar arco a la lista de arcos puente
                 arco.clear();
                 arco.push_back(m.at(i));
@@ -486,6 +486,34 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::puentesM(){
 
     }
     return arcosPuente;
+}
+
+
+
+template<typename Tipo>
+list<Tipo> GrafoNoDirigido<Tipo>::puntosArticulacion(){
+    list<Tipo> puntos, vertices = this->vertices();
+    list<Tipo> vecinos;
+    Tipo actual;
+    
+    //RECORRER VERTICE A VERTICE
+    while(!vertices.empty()){
+        actual = vertices.front();
+        vecinos = this->vecinos(actual); //GUARDAR ARCOS
+        this->eliminarVertice(actual); //ELIMINAR VERTICE
+        if(!this->esConexo()){
+            puntos.push_back(actual);
+        }
+        this->agregarVertice(actual); //VOLVER A AGREGAR EL VERTICE
+        //VOLVER A CREAR TODOS SUS ARCOS
+        while(!vecinos.empty()){
+            this->agregarArcoND(actual, vecinos.front());
+            vecinos.pop_front();
+        }
+        vertices.pop_front();
+    }
+
+    return puntos;
 }
 
 template <typename Tipo>

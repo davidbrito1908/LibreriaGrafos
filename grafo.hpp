@@ -38,6 +38,8 @@ class Grafo{
         list<Tipo> predecesores(Vertice<Tipo> *v); //FUNCIONAL
         list<Tipo> predecesores(Tipo v); //FUNCIONAL
 
+        list<Tipo> vertices();
+
         //ARCOS
         bool existeArco(Tipo v, Tipo w); //FUNCIONAL
         float getPesoArco(Tipo v, Tipo w); //FUNCIONAL
@@ -176,8 +178,16 @@ template<typename Tipo>
 list<Tipo> Grafo<Tipo>::predecesores(Tipo v){
     return this->predecesores(this->getVertice(v));            
 }
-
-
+template<typename Tipo>
+list<Tipo> Grafo<Tipo>::vertices(){
+    list<Tipo> result;
+    Vertice<Tipo> *actual = this->primero;
+    while(actual != nullptr){
+        result.push_back(actual->getInfo());
+        actual = actual->getSig();
+    }
+    return result;
+}
 //OPERACIONES CON ARCOS ============================================================
 template <typename Tipo>
 bool Grafo<Tipo>::existeArco(Tipo v, Tipo w){

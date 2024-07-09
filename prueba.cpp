@@ -40,6 +40,11 @@ int main(){
     leerND(&G);  
     //K.copiar(&G);
     G.escribirGrafo();
+    list<string> B = G.puntosArticulacion();
+    while(!B.empty()){
+        cout << B.front() << " -"; 
+        B.pop_front();
+    }
     cout<<endl;
     //K.escribirGrafo();
     vector<string> map;
@@ -63,7 +68,7 @@ int main(){
     //cout<<endl<<p;
     list<string> L;
     L.push_back("B");
-    list<string> C = G.caminoMenorConRequisito("A", "F", "D");     
+    list<string> C = G.caminoMenorConRequisito("B", "C", "A");     
     //list<string> D = G.caminoMenorConBloqueo("A", "H", L);                         
     while(!C.empty()){     
         if(C.size() == 1){
@@ -93,12 +98,12 @@ int main(){
         cout << "No es completo";  
     }*/   
 
-    /*list<list<string>> puentes = G.puentes(); 
+    list<list<string>> puentes = G.puentes(); 
     while(!puentes.empty()){   
         list<string> a = puentes.front(); 
         cout <<endl<< "(" << a.front() <<", "<<a.back()<<")"<<endl;
         puentes.pop_front(); 
-    }*/
+    }
     list<list<string>> c = G.ciclosHamiltonianos();
     cout << "M = " << M.getNArcos()<<endl;
     list<list<string>> aux;
