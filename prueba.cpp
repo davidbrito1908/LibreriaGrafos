@@ -106,11 +106,11 @@ int main(){
     }
     list<list<string>> c = G.ciclosHamiltonianos();
     //cout << "M = " << M.getNArcos()<<endl;
-    list<string> aux;
+    list<list<string>> aux;
     list<string> a;
+    aux = G.getCaminosEulerianos();
     /*while(!c.empty()){    
         aux = c.front(); 
-        //aux = G.getCaminosEulerianos();
         while(!aux.empty()){
             cout << aux.front() << "->"; 
             aux.pop_front();

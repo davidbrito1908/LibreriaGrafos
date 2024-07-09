@@ -413,10 +413,12 @@ list<list<Tipo>> GrafoDirigido<Tipo>::ciclosHamiltonianos(){
 template<>
 void GrafoDirigido<int>::eulerianos(list<int> *cam, int v, list<list<int>> *caminos){
     list<int> sucesores = this->sucesores(v);
+    float peso;
     int w;
     while(!sucesores.empty()){
         w = sucesores.front();
         cam->push_back(w);
+        peso = this->getPesoArco(v,w);
         this->eliminarArco(v,w);
         if(this->nArcos == 0){
             caminos->push_back(*cam);
@@ -424,7 +426,7 @@ void GrafoDirigido<int>::eulerianos(list<int> *cam, int v, list<list<int>> *cami
         }   
         this->eulerianos(cam, w, caminos);
 
-        this->agregarArco(v,w);
+        this->agregarArco(v,w,peso);
         cam->pop_back();
         sucesores.pop_front();
     }

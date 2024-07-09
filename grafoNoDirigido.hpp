@@ -431,6 +431,7 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::puentes(){
     list<list<Tipo>> arcosPuente;
     list<Tipo> arco;
     list<int> vecinos;
+    float peso;
     int i,w;
     vector<Tipo> m;
     GrafoNoDirigido<int> aux = this->mapear(&m);//MAPEAR GRAFO O(N+M)
@@ -440,6 +441,7 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::puentes(){
         //RECORRER ARCOS
         while(!vecinos.empty()){
             w = vecinos.front();
+            peso = aux.getPesoArco(i,w);
             //ELIMINAR ARCO
             aux.eliminarArcoND(i,w);
             //VERIFICAR QUE EL GRAFO SIGA CONEXO (Si no es conexo, el arco es un arco puente)
@@ -451,7 +453,7 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::puentes(){
                 arcosPuente.push_back(arco);
             }
             //VOLVER A AGREGAR EL ARCO ELIMINADO
-            aux.agregarArcoND(i,w);
+            aux.agregarArcoND(i,w,peso);
             vecinos.pop_front();
         }
 
@@ -463,6 +465,7 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::puentesM(){
     list<list<Tipo>> arcosPuente;
     list<Tipo> arco;
     list<int> vecinos;
+    float peso;
     int i,w;
 
     for (i=0; i<this->nVertices; i++){ //RECORRER VERTICES 
@@ -470,6 +473,7 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::puentesM(){
         //RECORRER ARCOS
         while(!vecinos.empty()){
             w = vecinos.front();
+            peso = this->getPesoArco(i,w);
             //ELIMINAR ARCO
             this->eliminarArcoND(i,w);
             //VERIFICAR QUE EL GRAFO SIGA CONEXO (Si no es conexo, el arco es un arco puente)
@@ -481,7 +485,7 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::puentesM(){
                 arcosPuente.push_back(arco);
             }
             //VOLVER A AGREGAR EL ARCO ELIMINADO
-            this->agregarArcoND(i,w);
+            this->agregarArcoND(i,w, peso);
             vecinos.pop_front();
         }
 
@@ -685,17 +689,19 @@ list<Tipo> GrafoNoDirigido<Tipo>::cicloHamiltonianoMinimo(){
 template<>
 void GrafoNoDirigido<int>::eulerianos(list<int> *cam, int v, list<list<int>> *caminos){
     list<int> vecinos = this->vecinos(v);
+    float peso;
     int w;
     while(!vecinos.empty()){
         w = vecinos.front();
         cam->push_back(w);
+        peso = this->getPesoArco(v,w);
         this->eliminarArcoND(v,w);
         if(this->nArcos == 0){
             caminos->push_back(*cam);
         }   
         this->eulerianos(cam, w, caminos);
 
-        this->agregarArcoND(v,w);
+        this->agregarArcoND(v,w,peso);
         cam->pop_back();
         vecinos.pop_front();
     }
