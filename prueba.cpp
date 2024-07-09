@@ -45,8 +45,8 @@ int main(){
     vector<string> map;
     GrafoNoDirigido<int> A, M = G.mapear(&map);
     float p;
-    /*M.arbolExpandidoMinimo(&A, &p);
-*/ 
+    //M.arbolExpandidoMinimo(&A, &p);
+
     //GrafoNoDirigido<string> W = G.convertirEnNoDirigido();
     cout<<endl;           
     //W.escribirGrafo();
@@ -63,7 +63,7 @@ int main(){
     //cout<<endl<<p;
     list<string> L;
     L.push_back("B");
-    list<string> C = G.caminoMenorConRequisito("V", "W", "H");     
+    list<string> C = G.caminoMenorConRequisito("A", "F", "D");     
     //list<string> D = G.caminoMenorConBloqueo("A", "H", L);                         
     while(!C.empty()){     
         if(C.size() == 1){
@@ -91,11 +91,11 @@ int main(){
         cout<<"Es completo";
     } else{
         cout << "No es completo";  
-    }*/
+    }*/   
 
-    /*list<list<string>> puentes = G.puentes();
+    /*list<list<string>> puentes = G.puentes(); 
     while(!puentes.empty()){   
-        list<string> a = puentes.front();
+        list<string> a = puentes.front(); 
         cout <<endl<< "(" << a.front() <<", "<<a.back()<<")"<<endl;
         puentes.pop_front(); 
     }*/
@@ -106,29 +106,42 @@ int main(){
     //while(!c.empty()){    
         //aux = c.front(); 
         aux = G.getCaminosEulerianos();
-        if (aux.empty()){
+        if (aux.empty()){ 
             cout<<"NO HAY"; 
         }
         /*while(!c.empty()){
-            a = c.front();
+            a = c.front(); 
             while(!a.empty()){
-                cout << a.front() << "->";
+                cout << a.front() << "->"; 
                 a.pop_front();
-            }
+            } 
             cout<<endl;
-            c.pop_front();
+            c.pop_front(); 
         }*/
         cout<<endl;
         //c.pop_front(); 
-    //} 
-    G.escribirGrafo();    
+    //}  
+    G.escribirGrafo();      
 
+
+    list<string> U = G.listaDFS("A");
+    vector<string> P = {"Ba", "Da", "Aaa", "Ea", "Ca", "Wa"};  
+    vector<string> I = ordenar(P, P.size());
+    int i;
+    while(!U.empty()){
+        cout<< U.front()<<" ";
+        U.pop_front(); 
+    }
+    cout<<endl;
+    for(i =0; i<P.size();i++){ 
+        cout<< I.at(i)<<" "; 
+    } 
     return 0;   
-
+  
 }
  
   
-
+ 
 void pruebas(){  
  
 
@@ -234,10 +247,10 @@ void pruebas(){
 
 
 
+ 
 
 
-
-
+ 
 
 
 

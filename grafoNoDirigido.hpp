@@ -21,6 +21,8 @@ class GrafoNoDirigido: public Grafo<Tipo>{
 
         GrafoNoDirigido<int> mapear(vector<Tipo> *mapeo);
         //RECORRIDOS
+        list<Tipo> listaBFS(Tipo inicio);
+        list<Tipo> listaDFS(Tipo inicio);
 
         //COMPONENTES CONEXAS (SOLO GRAFOS MAPEADOS)
         int NComponentes(); //FUNCIONAL
@@ -149,6 +151,51 @@ GrafoNoDirigido<int> GrafoNoDirigido<Tipo>::mapear(vector<Tipo> *mapeo){
 
 }
 
+//LISTAS DE RECORRIDOS ===============================
+template<typename Tipo>
+list<Tipo> GrafoNoDirigido<Tipo>::listaBFS(Tipo inicio){
+    list<Tipo> recorrido;
+    list<int> recorridoAux;
+    vector<Tipo> mapeo;
+    vector<bool> visitados;
+    GrafoNoDirigido<int> aux = this->mapear(&mapeo);
+    int v = this->buscarMapeo(mapeo, inicio, this->getNVertices());
+    int i;
+    for(i=0;i<this->getNVertices();i++){
+        visitados.emplace_back(false);
+    }
+    visitados.at(v) = true;
+    aux.BFS(v, &visitados, &recorridoAux);
+
+    while(!recorridoAux.empty()){
+        recorrido.push_back(mapeo.at(recorridoAux.front()));
+        recorridoAux.pop_front();
+    }
+    return recorrido;
+
+}
+template<typename Tipo>
+list<Tipo> GrafoNoDirigido<Tipo>::listaDFS(Tipo inicio){
+    list<Tipo> recorrido;
+    list<int> recorridoAux;
+    vector<Tipo> mapeo;
+    vector<bool> visitados;
+    GrafoNoDirigido<int> aux = this->mapear(&mapeo);
+    int v = this->buscarMapeo(mapeo, inicio, this->getNVertices());
+    int i;
+    for(i=0;i<this->getNVertices();i++){
+        visitados.emplace_back(false);
+    }
+    visitados.at(v) = true;
+    aux.DFS(v, &visitados, &recorridoAux);
+
+    while(!recorridoAux.empty()){
+        recorrido.push_back(mapeo.at(recorridoAux.front()));
+        recorridoAux.pop_front();
+    }
+    return recorrido;
+
+}
 //COMPONENTES CONEXAS
 template<>
 int GrafoNoDirigido<int>::NComponentes(){
@@ -222,12 +269,16 @@ list<Tipo> GrafoNoDirigido<Tipo>::caminoMenorConRequisito(Tipo v, Tipo w, Tipo H
         //SI NO SE ENCUENTRA UN POSIBLE CAMINO, SE PONE COMO RESTRICCION DEL PRIMER CAMINO EL ULTIMO VERTICE ANTES DE LLEGAR AL REQUISITO
         while(!camino1.empty() && camino2.empty()){
             bloqueosCam1.push_back(bloqueos.back());
-            camino1 = this->caminoMenorConBloqueo(v, H, bloqueosCam1); //REBUSCAR CAMINO DE INICIO A REQUISITO AHORA CON VERTICES BLOQUEADOS
-            if(!camino1.empty()){
-                bloqueos = camino1;
-                bloqueos.pop_back();
-                //REBUSCAR CAMINO DE REQUISITO AL VERTICE FINAL CON LOS VERTICES DEL CAMINO 1 BLOQUEADOS
-                camino2 = this->caminoMenorConBloqueo(H,w,bloqueos); 
+            if (bloqueos.back() != v){
+                camino1 = this->caminoMenorConBloqueo(v, H, bloqueosCam1); //REBUSCAR CAMINO DE INICIO A REQUISITO AHORA CON VERTICES BLOQUEADOS
+                if(!camino1.empty()){
+                    bloqueos = camino1;
+                    bloqueos.pop_back();
+                    //REBUSCAR CAMINO DE REQUISITO AL VERTICE FINAL CON LOS VERTICES DEL CAMINO 1 BLOQUEADOS
+                    camino2 = this->caminoMenorConBloqueo(H,w,bloqueos); 
+                }
+            }else{
+                camino1.clear();
             }
         }
     }

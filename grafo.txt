@@ -1,5 +1,11 @@
-V A 2
-A H 4
 A B 1
-B H 1
-B W 1
+A C 3
+A D 2
+A E 4
+B D 6
+B E 5
+B F 10
+C D 7
+C E 8
+C F 9
+E F 11

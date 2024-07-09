@@ -51,9 +51,10 @@ class Grafo{
         int buscarMapeo(vector<Tipo> arreglo, Tipo elem, int dim);
 
         void escribirGrafo();
-
         //RECORRIDOS (SOLO PARA GRAFOS MAPEADOS)
         void BFS(int v, vector<bool> *visitados); //FUNCIONAL
+        void BFS(int v, vector<bool> *visitados, list<int> *recorrido);
+        void DFS(int v, vector<bool> *visitados, list<int> *recorrido);
 
 
         list<int> caminoDijkstra(int v, int w);
@@ -471,7 +472,48 @@ void Grafo<int>::BFS(int v, vector<bool> *visitados){
     }
     return;
 }
-
+template <>
+void Grafo<int>::BFS(int v, vector<bool> *visitados, list<int> *recorrido){
+    queue<int> cola;
+    list<int> vecinos;
+    int w;
+    cola.push(v);
+    if(!visitados->empty()){
+        visitados->at(v) = true;
+ 
+        while(!cola.empty()){
+            v=cola.front();
+            recorrido->push_back(v);
+            vecinos = this->sucesores(v);
+            while(!vecinos.empty()){
+                w = vecinos.front();
+                if(!visitados->at(w)){
+                    visitados->at(w) = true;
+                    cola.push(w);
+                }
+                vecinos.pop_front();
+            }
+            cola.pop();
+        }
+    }
+    return;
+}
+template <>
+void Grafo<int>::DFS(int v, vector<bool> *visitados, list<int> *recorrido){
+    list<int> vecinos;
+    int w;
+    vecinos = this->sucesores(v);
+    //cout << v << endl;
+    recorrido->push_back(v);
+    while(!vecinos.empty()){
+        w = vecinos.front();
+        if(!visitados->at(w)){
+            visitados->at(w) = true;
+            this->DFS(w, visitados, recorrido);
+        }
+        vecinos.pop_front();
+    }
+}
 
 template <>
 list<int> Grafo<int>::caminoDijkstra(int v, int w){
@@ -725,7 +767,6 @@ bool Grafo<int>::existeEuleriano(vector<int> in, vector<int> out, int *v){
     }
     return ((vInicio == 0) && (vFinal == 0)) || ((vInicio == 1) && (vFinal==1));
 }
-
 
 
 #endif
