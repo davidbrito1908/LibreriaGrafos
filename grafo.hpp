@@ -57,6 +57,7 @@ class Grafo{
 
 
         list<int> caminoDijkstra(int v, int w);
+        list<int> caminoObstaculos(int v, int w, vector<bool> obstaculos);
         void mayorCamino(int v, int w, float peso, vector<bool> *visitados, list<int> *camino, float *pesoMayor, list<int> *caminoMayor, bool *prim);
         bool esCompleto();
 
@@ -508,15 +509,69 @@ list<int> Grafo<int>::caminoDijkstra(int v, int w){
             }
             cola.pop();
         }
-        resultado.push_back(w);
-        actual = w;
-        while((actual != v) && (actual != -1)){
-            actual = camino.at(actual);
-            resultado.push_front(actual);
+        if(camino.at(w) != -1){
+            resultado.push_back(w);
+            actual = w;
+            while((actual != v) && (actual != -1)){
+                actual = camino.at(actual);
+                resultado.push_front(actual);
+            }
         }
     }
     return resultado;
 }
+
+
+template <>
+list<int> Grafo<int>::caminoObstaculos(int v, int w, vector<bool> obstaculos){
+    vector<float> costos;
+    vector<int> camino;
+    list<int> resultado, vecinos;
+    queue<int> cola;
+    int i, actual, destino;
+    float costo; 
+
+    for(i=0;i<this->getNVertices();i++){
+        costos.push_back(-1);
+        camino.push_back(-1);
+    }
+    if((v<this->getNVertices()) && (w<this->getNVertices())){
+        costos.at(v) = 0;
+        cola.push(v);
+        while(!cola.empty()){
+            actual=cola.front();
+            vecinos = this->sucesores(actual);
+            while(!vecinos.empty()){
+                destino = vecinos.front();
+                if(!obstaculos.at(destino)){
+                    if(camino.at(actual) == -1){
+                        costo=costos.at(actual) + this->getPesoArco(actual,destino);
+                    }
+                    else{
+                        costo=costos.at(camino.at(actual)) + this->getPesoArco(camino.at(actual), actual) + this->getPesoArco(actual,destino);
+                    }
+                    if((costo<costos.at(destino)) || (costos.at(destino) == -1)){
+                        costos.at(destino) = costo;
+                        camino.at(destino) = actual;
+                        cola.push(destino);
+                    }
+                }
+                vecinos.pop_front();
+            }
+            cola.pop();
+        }
+        if(camino.at(w) != -1){
+            resultado.push_back(w);
+            actual = w;
+            while((actual != v) && (actual != -1)){
+                actual = camino.at(actual);
+                resultado.push_front(actual);
+            }
+        }
+    }
+    return resultado;
+}
+
 
 template<>
 void Grafo<int>::mayorCamino(int v, int w, float peso, vector<bool> *visitados, list<int> *camino, float *pesoMayor, list<int> *caminoMayor, bool *prim){

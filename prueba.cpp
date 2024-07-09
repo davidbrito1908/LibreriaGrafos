@@ -35,33 +35,37 @@ void leerND(GrafoNoDirigido<string> *g){
 
 
 int main(){        
-    GrafoDirigido<string> G, K;
+    GrafoNoDirigido<string> G, K;
     G.construir();
-    leer(&G);  
-    K.copiar(&G);
+    leerND(&G);  
+    //K.copiar(&G);
     G.escribirGrafo();
     cout<<endl;
-    K.escribirGrafo();
+    //K.escribirGrafo();
     vector<string> map;
-    GrafoDirigido<int> A, M = G.mapear(&map);
+    GrafoNoDirigido<int> A, M = G.mapear(&map);
     float p;
     /*M.arbolExpandidoMinimo(&A, &p);
 */ 
-    GrafoNoDirigido<string> W = G.convertirEnNoDirigido();
+    //GrafoNoDirigido<string> W = G.convertirEnNoDirigido();
     cout<<endl;           
-    W.escribirGrafo();
-    return 0;
+    //W.escribirGrafo();
+    //return 0;
     cout<<endl;
-    for(int i = 0; i<M.getNVertices();i++){ 
+    /*for(int i = 0; i<M.getNVertices();i++){ 
         cout<<endl<<i<<" Es igual a:" << map[i]<<endl;    
    
-    }       
-    M.escribirGrafo();
+    }    */   
+    //M.escribirGrafo();
     //M.eliminarArco(0,1);
     //M.escribirGrafo();
     //A.escribirGrafo();  
     //cout<<endl<<p;
-    list<string> C = G.caminoMayor("A", "F");                     
+    list<string> L;
+    L.push_back("B");
+    L.push_back("E");
+    list<string> C = G.caminoMenor("A", "F");     
+    list<string> D = G.caminoMenorConBloqueo("A", "F", L);                         
     while(!C.empty()){    
         if(C.size() == 1){
             cout<<C.front();
@@ -69,8 +73,16 @@ int main(){
             cout<<C.front()<<"->";
         }
         C.pop_front();
-    }       
+    }    
     cout<<endl;
+    while(!D.empty()){    
+        if(D.size() == 1){
+            cout<<D.front();
+        }else{ 
+            cout<<D.front()<<"->";
+        }
+        D.pop_front();
+    }  
     /*if(A.esConexo()){  
         cout<<"Es conexo";
     } else{

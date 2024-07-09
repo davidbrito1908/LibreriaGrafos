@@ -21,6 +21,7 @@ class GrafoDirigido: public Grafo<Tipo>{
 
         int NComponentesFConexas(); //NO LISTO
         list<Tipo> caminoMenor(Tipo v, Tipo w);
+        list<Tipo> caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo> bloqueados);
         list<Tipo> caminoMayor(Tipo v, Tipo w);
         list<list<Tipo>> caminosHamiltonianos();
         list<Tipo> caminoHamiltonianoMinimo();
@@ -147,6 +148,31 @@ list<Tipo> GrafoDirigido<Tipo>::caminoMenor(Tipo v, Tipo w){
     }
     return resultado;
 }
+
+template <typename Tipo>
+list<Tipo> GrafoDirigido<Tipo>::caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo> bloqueados){ 
+    vector<Tipo> mapeo;
+    GrafoDirigido<int> aux = this->mapear(&mapeo);
+    int inicio = this->buscarMapeo(mapeo, v, this->getNVertices()), fin = this->buscarMapeo(mapeo, w, this->getNVertices()), i;
+    list<int> camino;
+    vector<bool> bloqueos;
+    for (i=0;i<this->nVertices;i++){
+        bloqueos.emplace_back(false);
+    }
+    while(!bloqueados.empty()){
+        bloqueos.at(this->buscarMapeo(mapeo, bloqueados.front(), this->getNVertices())) = true;
+        bloqueados.pop_front();
+    }
+    camino = aux.caminoObstaculos(inicio, fin, bloqueos);
+
+    list<Tipo> resultado;
+    while(!camino.empty()){
+        resultado.push_back(mapeo[camino.front()]);
+        camino.pop_front();
+    }
+    return resultado;
+}
+
 template <typename Tipo>
 list<Tipo> GrafoDirigido<Tipo>::caminoMayor(Tipo v, Tipo w){
     vector<Tipo> mapeo;

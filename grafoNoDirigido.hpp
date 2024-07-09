@@ -26,6 +26,7 @@ class GrafoNoDirigido: public Grafo<Tipo>{
         int NComponentes(); //FUNCIONAL
 
         list<Tipo> caminoMenor(Tipo v, Tipo w);
+        list<Tipo> caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo> bloqueados);
         list<Tipo> caminoMayor(Tipo v, Tipo w);
         void arbolExpandidoMinimo(GrafoNoDirigido<int> *g, float *peso);
         void arcoMinimo(list<int> activos, int *v, int *w, float *peso, vector<bool> visitados, bool *band);
@@ -174,6 +175,29 @@ list<Tipo> GrafoNoDirigido<Tipo>::caminoMenor(Tipo v, Tipo w){
     GrafoNoDirigido<int> aux = this->mapear(&mapeo);
     int inicio = this->buscarMapeo(mapeo, v, this->getNVertices()), fin = this->buscarMapeo(mapeo, w, this->getNVertices());
     list<int> camino = aux.caminoDijkstra(inicio, fin);
+
+    list<Tipo> resultado;
+    while(!camino.empty()){
+        resultado.push_back(mapeo[camino.front()]);
+        camino.pop_front();
+    }
+    return resultado;
+}
+template <typename Tipo>
+list<Tipo> GrafoNoDirigido<Tipo>::caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo> bloqueados){ 
+    vector<Tipo> mapeo;
+    GrafoNoDirigido<int> aux = this->mapear(&mapeo);
+    int inicio = this->buscarMapeo(mapeo, v, this->getNVertices()), fin = this->buscarMapeo(mapeo, w, this->getNVertices()), i;
+    list<int> camino;
+    vector<bool> bloqueos;
+    for (i=0;i<this->nVertices;i++){
+        bloqueos.emplace_back(false);
+    }
+    while(!bloqueados.empty()){
+        bloqueos.at(this->buscarMapeo(mapeo, bloqueados.front(), this->getNVertices())) = true;
+        bloqueados.pop_front();
+    }
+    camino = aux.caminoObstaculos(inicio, fin, bloqueos);
 
     list<Tipo> resultado;
     while(!camino.empty()){
