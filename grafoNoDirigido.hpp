@@ -38,6 +38,7 @@ class GrafoNoDirigido: public Grafo<Tipo>{
         list<list<Tipo>> caminosHamiltonianos();
         list<Tipo> caminoHamiltonianoMinimo();
         list<list<Tipo>> ciclosHamiltonianos();
+        list<Tipo> cicloHamiltonianoMinimo();
         void eulerianos(list<int> *cam, int v, list<list<int>> *caminos);
         list<list<Tipo>> getCaminosEulerianos();
 
@@ -494,12 +495,19 @@ template<typename Tipo>
 list<Tipo> GrafoNoDirigido<Tipo>::puntosArticulacion(){
     list<Tipo> puntos, vertices = this->vertices();
     list<Tipo> vecinos;
+    list<float> pesos;
     Tipo actual;
-    
+
     //RECORRER VERTICE A VERTICE
     while(!vertices.empty()){
         actual = vertices.front();
         vecinos = this->vecinos(actual); //GUARDAR ARCOS
+        while(!vecinos.empty()){ //GUARDAR PESOS DE CADA ARCO
+            pesos.push_back(this->getPesoArco(actual, vecinos.front()));
+            vecinos.pop_front();
+        }
+        vecinos = this->vecinos(actual); //GUARDAR ARCOS
+        
         this->eliminarVertice(actual); //ELIMINAR VERTICE
         if(!this->esConexo()){
             puntos.push_back(actual);
@@ -507,7 +515,8 @@ list<Tipo> GrafoNoDirigido<Tipo>::puntosArticulacion(){
         this->agregarVertice(actual); //VOLVER A AGREGAR EL VERTICE
         //VOLVER A CREAR TODOS SUS ARCOS
         while(!vecinos.empty()){
-            this->agregarArcoND(actual, vecinos.front());
+            this->agregarArcoND(actual, vecinos.front(), pesos.front());
+            pesos.pop_front();
             vecinos.pop_front();
         }
         vertices.pop_front();
@@ -635,6 +644,42 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::ciclosHamiltonianos(){
         result.pop_front();
     }
     return hamiltonianos;
+}
+
+template <typename Tipo>
+list<Tipo> GrafoNoDirigido<Tipo>::cicloHamiltonianoMinimo(){
+    int i,j, nVisitados = 1;
+    list<int> resultAux;
+    list<Tipo> result;
+    list<int> camAux;
+    list<Tipo> cam;
+    vector<bool> visitados;
+    float peso=0, menor=0;
+    bool prim = true;
+    vector<Tipo> m;
+    GrafoNoDirigido<int> aux = this->mapear(&m); 
+    for(i=0;i<this->nVertices;i++){
+        visitados.emplace_back(false);
+    }
+
+    for(i=0;i<this->nVertices;i++){
+        peso = 0;
+        nVisitados=1;
+        for(j=0;j<this->nVertices;j++){
+            visitados.at(j) = false;
+        }
+
+        camAux.clear();
+        camAux.push_back(i);
+        aux.chamiltonianoMinimo(i, i, &visitados, &nVisitados, &peso,&menor, &resultAux, &camAux, &prim);
+
+    }
+    //DESMAPEAR CAMINO
+    while(!resultAux.empty()){
+        result.push_back(m.at(resultAux.front()));
+        resultAux.pop_front();
+    }
+    return result;
 }
 
 template<>

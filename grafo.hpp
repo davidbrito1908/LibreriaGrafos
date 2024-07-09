@@ -68,6 +68,7 @@ class Grafo{
         void hamiltonianos(int actual, vector<bool> *visitados, int *nVisitados, float *peso, list<list<int>> *caminos, list<int> *caminoActual);
         void hamiltonianoMinimo(int i, vector<bool> *visitados, int *nVisitados, float *peso, float *pesoMenor, list<int> *minimo, list<int> *caminoActual, bool *prim);
         void cHamiltonianos(int i, int inicio, vector<bool> *visitados, int *nVisitados, float *peso, list<list<int>> *caminos, list<int> *caminoActual);
+        void chamiltonianoMinimo(int i, int inicio, vector<bool> *visitados, int *nVisitados, float *peso, float *pesoMenor, list<int> *minimo, list<int> *caminoActual, bool *prim);
 
         void contarGrados(vector<int> *in, vector<int> *out);
         bool existeEuleriano(vector<int> in, vector<int> out, int *v);
@@ -750,6 +751,41 @@ void Grafo<int>::cHamiltonianos(int i, int inicio, vector<bool> *visitados, int 
         vecinos.pop_front();
     }
 }
+
+template <>
+void Grafo<int>::chamiltonianoMinimo(int i, int inicio, vector<bool> *visitados, int *nVisitados, float *peso, float *pesoMenor, list<int> *minimo, list<int> *caminoActual, bool *prim){
+    int w;
+    //INICIALIZAR ALTERNATIVAS
+    list<int>vecinos = this->sucesores(i);
+    while(!vecinos.empty()){
+        //INICIALIZAR PASO
+        w = vecinos.front();
+        //VERIFICAR SI EL PASO ES VALIDO
+        if(!visitados->at(w)){
+            //PROCESAR PASO
+            visitados->at(w) = true;
+            *peso = *peso + this->getPesoArco(i,w);
+            caminoActual->push_back(w);
+            *nVisitados = *nVisitados + 1;
+            //VERIFICAR SI ES SOLUCION
+            if((*nVisitados == this->nVertices + 1) && (w == inicio) && ((*peso<*pesoMenor)||*prim)){
+                *minimo = *caminoActual;
+                *pesoMenor = *peso;
+                *prim = false;
+            }else{
+                //SIGUIENTE PASO
+                this->chamiltonianoMinimo(w, inicio, visitados, nVisitados, peso, pesoMenor, minimo, caminoActual, prim);
+            }
+            //BORRAR PASO
+            visitados->at(w) = false;
+            *peso = *peso - this->getPesoArco(i,w);
+            caminoActual->pop_back();
+            *nVisitados = *nVisitados - 1;
+        }
+        vecinos.pop_front();
+    }
+}
+
 template<>
 void Grafo<int>::contarGrados(vector<int> *in, vector<int> *out){
     int i;

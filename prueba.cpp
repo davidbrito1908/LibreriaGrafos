@@ -48,7 +48,7 @@ int main(){
     cout<<endl;
     //K.escribirGrafo();
     vector<string> map;
-    GrafoNoDirigido<int> A, M = G.mapear(&map);
+    //GrafoNoDirigido<int> A, M = G.mapear(&map);
     float p;
     //M.arbolExpandidoMinimo(&A, &p);
 
@@ -91,7 +91,7 @@ int main(){
         cout<<"Es conexo";
     } else{
         cout << "No es conexo";  
-    } 
+    }   
     if(G.esCompleto()){  
         cout<<"Es completo";
     } else{
@@ -105,28 +105,28 @@ int main(){
         puentes.pop_front(); 
     }
     list<list<string>> c = G.ciclosHamiltonianos();
-    cout << "M = " << M.getNArcos()<<endl;
-    list<list<string>> aux;
+    //cout << "M = " << M.getNArcos()<<endl;
+    list<string> aux;
     list<string> a;
-    //while(!c.empty()){    
-        //aux = c.front(); 
-        aux = G.getCaminosEulerianos();
-        if (aux.empty()){ 
-            cout<<"NO HAY"; 
+    /*while(!c.empty()){    
+        aux = c.front(); 
+        //aux = G.getCaminosEulerianos();
+        while(!aux.empty()){
+            cout << aux.front() << "->"; 
+            aux.pop_front();
         }
-        /*while(!c.empty()){
-            a = c.front(); 
-            while(!a.empty()){
-                cout << a.front() << "->"; 
-                a.pop_front();
-            } 
-            cout<<endl;
-            c.pop_front(); 
-        }*/
         cout<<endl;
-        //c.pop_front(); 
-    //}  
-    G.escribirGrafo();      
+        c.pop_front();       
+    }
+    cout<<"MINIMO"<<endl;
+    aux = G.cicloHamiltonianoMinimo();
+    while(!aux.empty()){
+        cout << aux.front() << "->"; 
+        aux.pop_front();
+    }*/
+    cout<<endl;
+
+    G.escribirGrafo();       
 
 
     list<string> U = G.listaDFS("A");

@@ -249,7 +249,7 @@ list<Tipo> GrafoDirigido<Tipo>::caminoMenorConRequisito(Tipo v, Tipo w, Tipo H){
                     //REBUSCAR CAMINO DE REQUISITO AL VERTICE FINAL CON LOS VERTICES DEL CAMINO 1 BLOQUEADOS
                     camino2 = this->caminoMenorConBloqueo(H,w,bloqueos); 
                 }
-            }else{
+            }else{ 
                 camino1.clear();
             }
         }
