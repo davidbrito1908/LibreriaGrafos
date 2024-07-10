@@ -42,6 +42,11 @@ class GrafoNoDirigido: public Grafo<Tipo>{
         void eulerianos(list<int> *cam, int v, list<list<int>> *caminos);
         list<list<Tipo>> getCaminosEulerianos();
 
+        bool esBipartito();
+        void esBipartito(int inicio, bool *resultado);
+        bool esMulticoloreable(int nColores);
+        void esMulticoloreable(int inicio, int nColoresGrafo, bool *resultado);
+
         list<Tipo> puntosArticulacion();
         //PARA GRAFOS QUE YA ESTEN MAPEADOS
         list<list<int>> caminosEulerianos();
@@ -743,5 +748,116 @@ list<list<Tipo>> GrafoNoDirigido<Tipo>::getCaminosEulerianos(){
     }
     return result;
 }
+
+
+template<typename Tipo>
+bool GrafoNoDirigido<Tipo>::esBipartito(){
+    vector<Tipo> mapeo;
+    bool bicoloreable = true;
+    GrafoNoDirigido<int> aux = this->mapear(&mapeo);
+    int fuente = this->buscarMapeo(mapeo, this->primero->getInfo(), this->getNVertices());
+    aux.esBipartito(fuente,&bicoloreable);
+    return bicoloreable;
+}
+
+template<typename Tipo>
+void GrafoNoDirigido<Tipo>::esBipartito(int inicio, bool *resultado){
+    vector<int> colores;
+    int i;
+    queue<int> c;
+    list<int> sucesores;
+    int v,w;
+
+    for(i=0;i<this->getNVertices();i++){
+        colores.emplace_back(-1);
+    }
+    *resultado = true;
+    colores.at(inicio) = 0;
+    c.push(inicio);
+    while(!c.empty() && *resultado){
+        v = c.front();
+        c.pop();
+
+        sucesores = this->vecinos(v);
+        while (!sucesores.empty() && *resultado){
+        w = sucesores.front();
+        if(colores[w] == -1){
+            colores[w] = (colores[v] + 1) % 2;
+            c.push(w);
+        }
+        if(colores[w] == colores[v]){
+            *resultado = false;
+            return;
+        }
+        sucesores.pop_front();
+        }
+    } 
+    
+    return;
+}
+
+template<typename Tipo>
+bool GrafoNoDirigido<Tipo>::esMulticoloreable(int nColores){
+    vector<Tipo> map;
+    bool multicoloreable = true;
+    GrafoNoDirigido<int> aux = this->mapear(&map);
+    int fuente = this->buscarMapeo(map,this->primero->getInfo(), this->getNVertices());
+    aux.esMulticoloreable(fuente,nColores,&multicoloreable);
+    return multicoloreable;
+}
+
+template<typename Tipo>
+void GrafoNoDirigido<Tipo>::esMulticoloreable(int inicio, int nColoresGrafo, bool *resultado){
+  vector<int> colores;
+  vector<bool> coloresDisponibles, visitados;
+  queue<int> c;
+  list<int> sucesores;
+  int v,w,i;
+
+    for(i=0;i<this->getNVertices();i++){
+        colores.emplace_back(-1);
+        coloresDisponibles.emplace_back(true);
+        visitados.emplace_back(false);
+    }
+
+    bool encontrado = false;
+    *resultado = true;
+    colores.at(inicio) = 0;
+    c.push(inicio);
+    while(!c.empty() && *resultado){
+        v = c.front();
+        c.pop();
+
+        sucesores = this->vecinos(v);
+        while (!sucesores.empty() && *resultado)
+        {
+        w = sucesores.front();
+        visitados[w] = true;
+        if(colores[w] != -1){
+            coloresDisponibles[colores[w]] = false;
+        }
+        if(!visitados[v]){
+            c.push(w);
+        }   
+        sucesores.pop_front();
+        }
+        i = 0;
+        encontrado = false;
+        while (i < nColoresGrafo && !encontrado){
+        if(coloresDisponibles[i]){
+            colores[w] = i;
+            encontrado = true;
+        }
+        ++i;
+        }
+        visitados[v] = true;
+        if(!encontrado){
+        *resultado = false;
+        return;
+        }
+    }
+    return;
+}
+
 
 #endif

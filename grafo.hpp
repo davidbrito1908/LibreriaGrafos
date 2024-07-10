@@ -15,6 +15,12 @@ class Grafo{
         Vertice<Tipo> *primero;
 
     public:
+        Grafo(){
+            this->primero = nullptr;
+            this->nVertices=0;
+            this->nArcos=0;
+        }
+        ~Grafo(){}
         void construir(){
             this->primero = nullptr;
             this->nVertices=0;

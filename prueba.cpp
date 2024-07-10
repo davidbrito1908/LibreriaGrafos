@@ -48,7 +48,7 @@ int main(){
     cout<<endl;
     //K.escribirGrafo();
     vector<string> map;
-    //GrafoNoDirigido<int> A, M = G.mapear(&map);
+    GrafoNoDirigido<int> A, M = G.mapear(&map);
     float p;
     //M.arbolExpandidoMinimo(&A, &p);
 
@@ -68,7 +68,7 @@ int main(){
     //cout<<endl<<p;
     list<string> L;
     L.push_back("B");
-    list<string> C = G.caminoMenorConRequisito("B", "C", "A");     
+    list<string> C ;//= G.caminoMenor("luis", "jeison");     
     //list<string> D = G.caminoMenorConBloqueo("A", "H", L);                         
     while(!C.empty()){     
         if(C.size() == 1){
@@ -98,13 +98,13 @@ int main(){
         cout << "No es completo";  
     }*/   
 
-    list<list<string>> puentes = G.puentes(); 
+    /*list<list<string>> puentes = G.puentes(); 
     while(!puentes.empty()){   
         list<string> a = puentes.front(); 
         cout <<endl<< "(" << a.front() <<", "<<a.back()<<")"<<endl;
         puentes.pop_front(); 
-    }
-    list<list<string>> c = G.ciclosHamiltonianos();
+    }*/
+    //list<list<string>> c = G.ciclosHamiltonianos();
     //cout << "M = " << M.getNArcos()<<endl;
     list<list<string>> aux;
     list<string> a;
@@ -129,18 +129,25 @@ int main(){
     G.escribirGrafo();       
 
 
-    list<string> U = G.listaDFS("A");
+    //list<string> U = G.listaDFS("A");
     vector<string> P = {"Ba", "Da", "Aaa", "Ea", "Ca", "Wa"};  
     vector<string> I = ordenar(P, P.size());
     int i;
-    while(!U.empty()){
+    /*while(!U.empty()){
         cout<< U.front()<<" ";
         U.pop_front(); 
-    }
+    }*/
     cout<<endl;
     for(i =0; i<P.size();i++){ 
         cout<< I.at(i)<<" "; 
-    } 
+    }   
+    cout<<endl;
+    if(G.esBipartito()){ 
+        cout << "SI ES ";
+    }else{ 
+        cout << "NO ES";
+    }
+    cout<<endl;
     return 0;   
   
 }
