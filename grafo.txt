@@ -1,10 +1,7 @@
-A E 0
-A D 0
-A F 0
-B E 0
-B D 0
-B F 0
-C D 0
-C E 0
-C F 0
-A B 0
+RESTRINGIDO = [C,D]
+A B 10
+A C 30
+A D 90
+B E 20
+C E 90
+D E 20

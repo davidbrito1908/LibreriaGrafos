@@ -65,8 +65,8 @@ class Grafo{
         void DFS(int v, vector<bool> *visitados, list<int> *recorrido);
 
 
-        list<int> caminoDijkstra(int v, int w);
-        list<int> caminoObstaculos(int v, int w, vector<bool> obstaculos);
+        list<int> caminoDijkstra(int v, int w, float *peso = nullptr);
+        list<int> caminoObstaculos(int v, int w, vector<bool> obstaculos, float *peso = nullptr);
         void mayorCamino(int v, int w, float peso, vector<bool> *visitados, list<int> *camino, float *pesoMayor, list<int> *caminoMayor, bool *prim);
         bool esCompleto();
 
@@ -533,7 +533,7 @@ void Grafo<int>::DFS(int v, vector<bool> *visitados, list<int> *recorrido){
 }
 
 template <>
-list<int> Grafo<int>::caminoDijkstra(int v, int w){
+list<int> Grafo<int>::caminoDijkstra(int v, int w, float *peso){
     vector<float> costos;
     vector<int> camino;
     list<int> resultado, vecinos;
@@ -569,6 +569,9 @@ list<int> Grafo<int>::caminoDijkstra(int v, int w){
             cola.pop();
         }
         if(camino.at(w) != -1){
+            if (peso != nullptr){
+                *peso = costos.at(w);
+            }
             resultado.push_back(w);
             actual = w;
             while((actual != v) && (actual != -1)){
@@ -582,7 +585,7 @@ list<int> Grafo<int>::caminoDijkstra(int v, int w){
 
 
 template <>
-list<int> Grafo<int>::caminoObstaculos(int v, int w, vector<bool> obstaculos){
+list<int> Grafo<int>::caminoObstaculos(int v, int w, vector<bool> obstaculos, float *peso){
     vector<float> costos;
     vector<int> camino;
     list<int> resultado, vecinos;
@@ -620,6 +623,9 @@ list<int> Grafo<int>::caminoObstaculos(int v, int w, vector<bool> obstaculos){
             cola.pop();
         }
         if(camino.at(w) != -1){
+            if (peso != nullptr){
+                *peso = costos.at(w);
+            }
             resultado.push_back(w);
             actual = w;
             while((actual != v) && (actual != -1)){

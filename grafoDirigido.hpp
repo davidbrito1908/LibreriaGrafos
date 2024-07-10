@@ -26,9 +26,9 @@ class GrafoDirigido: public Grafo<Tipo>{
 
 
         int NComponentesFConexas(); //NO LISTO
-        list<Tipo> caminoMenor(Tipo v, Tipo w);
-        list<Tipo> caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo> bloqueados);
-        list<Tipo> caminoMenorConRequisito(Tipo v, Tipo w, Tipo H);
+        list<Tipo> caminoMenor(Tipo v, Tipo w, float *peso = nullptr);
+        list<Tipo> caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo> bloqueados, float *peso = nullptr);
+        list<Tipo> caminoMenorConRequisito(Tipo v, Tipo w, Tipo H, float *peso = nullptr);
         list<Tipo> caminoMayor(Tipo v, Tipo w);
         list<list<Tipo>> caminosHamiltonianos();
         list<Tipo> caminoHamiltonianoMinimo();
@@ -189,11 +189,11 @@ int GrafoDirigido<int>::NComponentesFConexas(){
 }
 
 template <typename Tipo>
-list<Tipo> GrafoDirigido<Tipo>::caminoMenor(Tipo v, Tipo w){
+list<Tipo> GrafoDirigido<Tipo>::caminoMenor(Tipo v, Tipo w, float *peso){
     vector<Tipo> mapeo;
     GrafoDirigido<int> aux = this->mapear(&mapeo);
     int inicio = this->buscarMapeo(mapeo, v, this->getNVertices()), fin = this->buscarMapeo(mapeo, w, this->getNVertices());
-    list<int> camino = aux.caminoDijkstra(inicio, fin);
+    list<int> camino = aux.caminoDijkstra(inicio, fin, peso);
 
     list<Tipo> resultado;
     while(!camino.empty()){
@@ -204,7 +204,7 @@ list<Tipo> GrafoDirigido<Tipo>::caminoMenor(Tipo v, Tipo w){
 }
 
 template <typename Tipo>
-list<Tipo> GrafoDirigido<Tipo>::caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo> bloqueados){ 
+list<Tipo> GrafoDirigido<Tipo>::caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo> bloqueados, float *peso){ 
     vector<Tipo> mapeo;
     GrafoDirigido<int> aux = this->mapear(&mapeo);
     int inicio = this->buscarMapeo(mapeo, v, this->getNVertices()), fin = this->buscarMapeo(mapeo, w, this->getNVertices()), i;
@@ -217,7 +217,7 @@ list<Tipo> GrafoDirigido<Tipo>::caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo>
         bloqueos.at(this->buscarMapeo(mapeo, bloqueados.front(), this->getNVertices())) = true;
         bloqueados.pop_front();
     }
-    camino = aux.caminoObstaculos(inicio, fin, bloqueos);
+    camino = aux.caminoObstaculos(inicio, fin, bloqueos, peso);
 
     list<Tipo> resultado;
     while(!camino.empty()){
@@ -227,27 +227,27 @@ list<Tipo> GrafoDirigido<Tipo>::caminoMenorConBloqueo(Tipo v, Tipo w, list<Tipo>
     return resultado;
 }
 template <typename Tipo>
-list<Tipo> GrafoDirigido<Tipo>::caminoMenorConRequisito(Tipo v, Tipo w, Tipo H){ 
+list<Tipo> GrafoDirigido<Tipo>::caminoMenorConRequisito(Tipo v, Tipo w, Tipo H, float *peso){ 
     list<Tipo> camino1, camino2;
     list<Tipo> bloqueos, bloqueosCam1;
     list<Tipo> resultado;
-
-    camino1 = this->caminoMenor(v, H);
+    float p1,p2;
+    camino1 = this->caminoMenor(v, H, &p1);
     if(!camino1.empty()){
         //HACER CAMINO DEL REQUISITO AL DESTINO PERO SIN PASAR POR LOS VERTICES YA UTILIZADOS POR EL CAMINO DEL INICIO AL REQUISITO
         bloqueos = camino1;
         bloqueos.pop_back();
-        camino2 = this->caminoMenorConBloqueo(H,w,bloqueos);
+        camino2 = this->caminoMenorConBloqueo(H,w,bloqueos, &p2);
         //SI NO SE ENCUENTRA UN POSIBLE CAMINO, SE PONE COMO RESTRICCION DEL PRIMER CAMINO EL ULTIMO VERTICE ANTES DE LLEGAR AL REQUISITO
         while(!camino1.empty() && camino2.empty()){
             bloqueosCam1.push_back(bloqueos.back());
             if(bloqueos.back() != v){
-                camino1 = this->caminoMenorConBloqueo(v, H, bloqueosCam1); //REBUSCAR CAMINO DE INICIO A REQUISITO AHORA CON VERTICES BLOQUEADOS
+                camino1 = this->caminoMenorConBloqueo(v, H, bloqueosCam1, &p1); //REBUSCAR CAMINO DE INICIO A REQUISITO AHORA CON VERTICES BLOQUEADOS
                 if(!camino1.empty()){
                     bloqueos = camino1;
                     bloqueos.pop_back();
                     //REBUSCAR CAMINO DE REQUISITO AL VERTICE FINAL CON LOS VERTICES DEL CAMINO 1 BLOQUEADOS
-                    camino2 = this->caminoMenorConBloqueo(H,w,bloqueos); 
+                    camino2 = this->caminoMenorConBloqueo(H,w,bloqueos, &p2); 
                 }
             }else{ 
                 camino1.clear();
@@ -256,6 +256,7 @@ list<Tipo> GrafoDirigido<Tipo>::caminoMenorConRequisito(Tipo v, Tipo w, Tipo H){
     }
     //SI EL CAMINO 1 NO ESTA VACIO, QUERE DECIR QUE SE ENCONTRO UN CAMINO VALIDO
     if(!camino1.empty()){
+        *peso = p1 + p2;
         while(!camino1.empty()){
             resultado.push_back(camino1.front());
             camino1.pop_front();

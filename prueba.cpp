@@ -4,8 +4,33 @@
 #include "grafoNoDirigido.hpp"
 #include <list>
 #include <vector>
+#include <sstream>
+#include<algorithm>
 using namespace std;
 
+void leer2(GrafoNoDirigido<string> * g, list<string> *bloqueados){
+    string bloqueo, info,d, v, w;
+    float peso;
+
+    getline(cin, bloqueo);
+    stringstream data(bloqueo);
+    getline(data, info, '[');
+    getline(data, info, ']'); //La cadena resultante tiene todos los datos entre los corchetes 
+    stringstream a(info);
+
+    while(getline(a, d, ',')){ //Separar dato "d" mediante las comas
+        d.erase(remove_if(d.begin(), d.end(), ::isspace),d.end()); //eliminar espacios sobrantes
+        bloqueados->push_back(d); //Añadir a la lista
+    }
+
+    while(cin>>v){
+        cin>>w;
+        cin>>peso; 
+        g->agregarVertice(v);
+        g->agregarVertice(w);
+        g->agregarArco(v,w, peso);
+    }
+}
 void leer(GrafoDirigido<string> *g){
     string v,w;
     float peso;
@@ -27,29 +52,34 @@ void leerND(GrafoNoDirigido<string> *g){
         cin>>peso;
 
         g->agregarVertice(v);
-        g->agregarVertice(w);
+        g->agregarVertice(w); 
         g->agregarArcoND(v,w, peso); 
     }
 
-}
+} 
 
 
-int main(){        
+int main(){         
     GrafoNoDirigido<string> G, K;
     G.construir();
-    leerND(&G);  
+    list<string> L;
+    leer2(&G, &L);  
+    /*while(!L.empty()){ 
+        cout<<L.front();
+        L.pop_front();
+    }*/
     //K.copiar(&G);
     G.escribirGrafo();
-    list<string> B = G.puntosArticulacion();
+    /*list<string> B = G.puntosArticulacion();
     while(!B.empty()){
         cout << B.front() << " -"; 
         B.pop_front();
-    }
+    }*/
     cout<<endl;
     //K.escribirGrafo();
     vector<string> map;
     GrafoNoDirigido<int> A, M = G.mapear(&map);
-    float p;
+    //float p;
     //M.arbolExpandidoMinimo(&A, &p);
 
     //GrafoNoDirigido<string> W = G.convertirEnNoDirigido();
@@ -66,27 +96,27 @@ int main(){
     //M.escribirGrafo();
     //A.escribirGrafo();  
     //cout<<endl<<p;
-    list<string> L;
-    L.push_back("B");
-    list<string> C ;//= G.caminoMenor("luis", "jeison");     
-    //list<string> D = G.caminoMenorConBloqueo("A", "H", L);                         
-    while(!C.empty()){     
+    //L.push_back("B");
+    list<string> C ;//= G.caminoMenor("luis", "jeison");  
+    float p;   
+    list<string> D = G.caminoMenorConBloqueo("A", "E", L, &p);                         
+    /*while(!C.empty()){     
         if(C.size() == 1){
             cout<<C.front();
-        }else{ 
-            cout<<C.front()<<"->";
+        }else{  
+            cout<<C.front()<<"->";   
         }  
         C.pop_front(); 
-    }
-    cout<<endl;
-    /*while(!D.empty()){    
+    }*/
+    cout<<"EL PESO ES: "<<p<<endl;
+    while(!D.empty()){    
         if(D.size() == 1){
             cout<<D.front();
         }else{ 
             cout<<D.front()<<"->";
         }
         D.pop_front();
-    }  */
+    }  
     /*if(A.esConexo()){  
         cout<<"Es conexo";
     } else{
@@ -126,7 +156,7 @@ int main(){
     }*/
     cout<<endl;
 
-    G.escribirGrafo();       
+    //G.escribirGrafo();       
 
 
     //list<string> U = G.listaDFS("A");
